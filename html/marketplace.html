@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniMart - Campus Marketplace</title>
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/component.css" />
+  <link rel="stylesheet" href="../css/marketplace.css" />
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <!-- 1. Left Side: Logo -->
+    <div class="logo">
+      <a href="marketplace.html"><span class="logo-uni">Uni</span><span class="logo-mart">Mart</span></a>
+    </div>
+
+    <!-- 2. Middle: Search Bar -->
+    <div class="search-container">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search textbooks, uniforms, electronics..." />
+    </div>
+
+    <!-- 3. Right Side: Unified Action & Navigation Controls -->
+    <div class="nav-controls">
+      <!-- Category Dropdown -->
+      <div class="category-dropdown">
+        <button id="categoryDropdownBtn" class="dropdown-toggle" type="button">
+          Categories ▾
+        </button>
+        <ul id="categoryMenu" class="dropdown-menu">
+          <li data-category="all">📦 All Items</li>
+          <li data-category="clothing">👕 Clothing</li>
+          <li data-category="electronics">💻 Electronics</li>
+          <li data-category="books">📚 Books & Notes</li>
+          <li data-category="dorm">🛏️ Dorm Essentials</li>
+        </ul>
+      </div>
+
+      <!-- Action Buttons -->
+      <a href="upload.html" class="btn-upload">+ Upload</a>
+      <a href="mylisting.html" class="icon-btn">📦 My Listings</a>
+      <a href="messages.html" class="icon-btn" title="Messages">💬 Message</a>
+      <a href="profile.html" class="icon-btn" title="Profile">👤 MyProfile</a>
+    </div>
+  </header>
+
+  <!-- Product Grid Container -->
+  <main id="productsGrid" class="product-grid marketplace-grid">
+    <!-- Dynamic cards load here -->
+  </main>
+
+  <!-- JavaScript Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/marketplace.js"></script>
+</body>
+</html>

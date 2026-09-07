@@ -1,0 +1,152 @@
+/* login box design */
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* Centered Logo above the card */
+.auth-logo {
+  margin-bottom: 24px;
+  text-align: center;
+}
+/* UniMart login logo */
+.auth-logo a {
+  text-decoration: none;
+  font-size:3.1rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* If colors are defined in global/component css, these inherit or can be set explicitly */
+.auth-logo .logo-uni {
+  color: #336af7; /* UniMart primary orange/coral */
+}
+
+.auth-logo .logo-mart {
+  color: #111827; /* Dark text */
+}
+
+/* Auth card wrapper */
+.auth-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 420px;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+.auth-card h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #111827;
+  text-align: center;
+}
+
+/* Form structure */
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-card label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 14px;
+  margin-bottom: 4px;
+}
+
+.auth-card input {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+
+.auth-card input:focus {
+  border-color: #336af7;
+}
+
+/* Error text styling */
+.error-message {
+  color: #ef4444;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 4px;
+  min-height: 16px;
+  font-weight: bold;
+}
+
+/* Toggle link text */
+.auth-toggle-text {
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.auth-toggle-text a {
+  color: #336af7;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.auth-toggle-text a:hover {
+  text-decoration: underline;
+}
+
+/* Utility to toggle visibility between Login and Register */
+.hidden {
+  display: none !important;
+}
+
+
+/* Forgot Password Link right under password box */
+.forgot-password-wrap {
+  text-align: right;
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.forgot-password-wrap a {
+  font-size: 12px;
+  color: #336af7;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.forgot-password-wrap a:hover {
+  text-decoration: underline;
+}
+
+/* Informational Subtext inside forms */
+.auth-subtext {
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+  margin-top: -10px;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+/* Success status text styling */
+.success-message {
+  color: #16a34a;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-align: center;
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniMart - My Listings</title>
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/component.css" />
+  <link rel="stylesheet" href="../css/marketplace.css" />
+  <link rel="stylesheet" href="../css/profile.css" />
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="logo">
+      <a href="marketplace.html"><span class="logo-uni">Uni</span><span class="logo-mart">Mart</span></a>
+    </div>
+    <div class="nav-controls">
+      <a href="marketplace.html" class="icon-btn">🏪 Marketplace</a>
+      <a href="upload.html" class="icon-btn">+ Upload</a>
+      <a href="messages.html" class="icon-btn">💬 Message</a>
+      <a href="profile.html" class="icon-btn">👤 MyProfile</a>
+    </div>
+  </header>
+
+  <main class="marketplace-container" style="max-width: 1280px; margin: 30px auto; padding: 0 24px;">
+    <!-- Page Header & Action Bar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <h1 style="font-size: 1.8rem; font-weight: 800; color: #0f172a; margin: 0 0 6px 0;">📦 My Inventory & Listings</h1>
+        <p style="color: #64748b; margin: 0; font-size: 0.95rem;">Manage, relist, edit, or remove items you have posted for sale.</p>
+      </div>
+      <a href="upload.html" class="btn-detail-primary" style="text-decoration: none; padding: 10px 20px; font-size: 0.9rem;">
+        + Post New Item
+      </a>
+    </div>
+
+    <!-- Product Grid for Seller Listings -->
+    <div id="sellerListingsGrid" class="product-grid" style="padding: 0; margin: 0;">
+      <p class="empty-state">Loading your listings...</p>
+    </div>
+
+    <!-- Quick Edit Modal -->
+    <div id="editListingModal" class="modal-overlay hidden" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+      <div style="background: #ffffff; width: 100%; max-width: 460px; padding: 28px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);">
+        <h3 style="margin: 0 0 16px 0; font-size: 1.25rem; color: #0f172a;">✏️ Edit Listing</h3>
+        
+        <form id="editListingForm" style="display: flex; flex-direction: column; gap: 14px;">
+          <input type="hidden" id="editProductId" />
+
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Title</label>
+            <input type="text" id="editTitle" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; box-sizing: border-box;" />
+          </div>
+
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Price (฿)</label>
+            <input type="number" id="editPrice" min="0" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; box-sizing: border-box;" />
+          </div>
+
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Location</label>
+            <input type="text" id="editLocation" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; box-sizing: border-box;" />
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button type="button" id="btnCancelEdit" class="btn-manage" style="flex: 1; padding: 10px;">Cancel</button>
+            <button type="submit" class="btn-detail-primary" style="flex: 1; padding: 10px; border: none; cursor: pointer;">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/mylisting.js"></script>
+</body>
+</html>

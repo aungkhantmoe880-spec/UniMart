@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniMart - My Favorites</title>
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/component.css" />
+  <link rel="stylesheet" href="../css/marketplace.css" />
+  <link rel="stylesheet" href="../css/profile.css" />
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="logo">
+      <a href="marketplace.html"><span class="logo-uni">Uni</span><span class="logo-mart">Mart</span></a>
+    </div>
+    <div class="nav-actions">
+      <a href="marketplace.html" class="nav-pill-btn">🏪 Marketplace</a>
+      <a href="profile.html" class="nav-pill-btn nav-pill-outline">👤 MyProfile</a>
+    </div>
+  </header>
+
+  <main class="profile-container">
+    <div style="margin-bottom: 24px;">
+      <h1 style="font-size: 1.6rem; color: #0f172a; margin: 0 0 6px 0;">❤️ My Saved Favorites</h1>
+      <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Items you have bookmarked across campus.</p>
+    </div>
+
+    <!-- Dynamic Favorites Grid -->
+    <div id="favoritesFullGrid" class="product-grid">
+      <p class="empty-state">Loading your favorites...</p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/favorites.js"></script>
+</body>
+</html>

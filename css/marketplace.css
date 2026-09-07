@@ -1,0 +1,183 @@
+/* --- Marketplace Layout & 4-Column Grid --- */
+.marketplace-container {
+  margin-top: 24px;
+}
+
+.marketplace-grid,
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 1280px;
+  margin: 30px auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* --- Clean White Product Card --- */
+.card.product-card {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 20px;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+/* --- Inset Photo Container with Rounded Corners --- */
+.card-img-container {
+  position: relative; /* Anchor point for centered absolute SOLD overlay */
+  width: 100%;
+  height: 200px;
+  padding: 10px 10px 0 10px;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+  background-color: #f8fafc;
+  transition: filter 0.2s ease;
+}
+
+/* --- Sold State & Red Lettering Badge --- */
+.card.product-card.item-sold .card-img {
+  filter: grayscale(60%) brightness(0.7);
+}
+
+.sold-badge-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(15, 23, 42, 0.88);
+  color: #ef4444; /* Bright red text */
+  border: 2px solid #ef4444;
+  padding: 6px 18px;
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  text-transform: uppercase;
+}
+
+/* --- Card Body Information --- */
+.card-body {
+  padding: 14px 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-grow: 1;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-location {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* --- Card Footer: Price & Action Buttons --- */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+}
+
+.card-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0284c7;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: scale(1.05);
+}
+
+.fav-btn.active {
+  background: #fee2e2;
+  border-color: #fecaca;
+}
+
+.empty-state {
+  color: #94a3b8;
+  font-style: italic;
+  padding: 40px 0;
+  text-align: center;
+  grid-column: 1 / -1;
+}
+
+/* --- Responsive Layout Breakpoints --- */
+@media (max-width: 1024px) {
+  .marketplace-grid,
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .marketplace-grid,
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .marketplace-grid,
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

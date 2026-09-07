@@ -1,0 +1,159 @@
+/* --- Navigation Bar Layout --- */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+/* --- Logo Styling --- */
+.logo a {
+  font-size: 3.1rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+}
+
+.logo-uni {
+  color: #336af7; /* Primary Blue */
+}
+
+.logo-mart {
+  color: #111827; /* Dark Navy/Black */
+}
+
+/* 🔍 Search Bar expands smoothly */
+.search-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 550px;
+  background-color: #F1F5F9;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 999px;
+  padding: 0 18px;
+  height: 40px;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.search-icon {
+  font-size: 16px;
+  color: #64748B;
+}
+
+.search-container input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: #111827;
+}
+
+.search-container input::placeholder {
+  color: #94A3B8;
+}
+
+/* --- Nav Controls (Equal spacing & straight alignment for all buttons) --- */
+.nav-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;                 /* ↔️ Equal gap between every button */
+  flex: 1;
+  margin-left: 20px;
+}
+
+/* Category dropdown wrapper reset */
+.category-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 0 !important;      /* 🛑 Removes vertical misalignment */
+}
+
+/* --- Unified Button System (Identical Height, Padding & Alignment) --- */
+.dropdown-toggle,
+.btn-upload,
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;              /* 📏 Exact same height */
+  padding: 0 16px;           /* ↔️ Exact same horizontal padding */
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-sizing: border-box;
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 1;
+  transition: all 0.2s ease;
+  vertical-align: middle;
+}
+
+/* Outlined Buttons (Categories, My Listings, Message, MyProfile) */
+.dropdown-toggle,
+.icon-btn {
+  background-color: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  color: #0F172A;
+}
+
+.dropdown-toggle:hover,
+.icon-btn:hover {
+  background-color: #E2E8F0;
+  border-color: #CBD5E1;
+}
+
+/* Primary Button (+ Upload) */
+.btn-upload {
+  background-color: #336af7;
+  border: 1.5px solid #336af7;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.btn-upload:hover {
+  background-color: #032d87;
+  border-color: #032d87;
+}
+
+/* --- Dropdown Menu Positioning --- */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background-color: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  list-style: none;
+  padding: 8px;
+  min-width: 180px;
+  z-index: 50;
+}
+
+.dropdown-menu li {
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #334155;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.dropdown-menu li:hover {
+  background-color: #F1F5F9;
+  color: #336af7;
+}
+
+.dropdown-menu.show {
+  display: block;
+}

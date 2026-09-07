@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniMart - Product Details</title>
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/component.css" />
+  <link rel="stylesheet" href="../css/product.css" />
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="logo">
+      <a href="marketplace.html"><span class="logo-uni">Uni</span><span class="logo-mart">Mart</span></a>
+    </div>
+    <div class="nav-controls">
+      <a href="marketplace.html" class="icon-btn">🏪 Marketplace</a>
+      <a href="messages.html" class="icon-btn">💬 Message</a>
+      <a href="profile.html" class="icon-btn">👤 MyProfile</a>
+    </div>
+  </header>
+
+  <main class="product-detail-container">
+    <!-- Breadcrumb & Back button -->
+    <div class="detail-nav">
+      <a href="marketplace.html" class="back-link">← Back to Marketplace</a>
+    </div>
+
+    <div class="product-layout" id="productContent">
+      <!-- Left Column: Image Gallery -->
+      <section class="gallery-column">
+        <div class="main-image-frame" id="mainImageFrame" title="Click to view full image">
+          <img id="mainDisplayImg" src="https://via.placeholder.com/600x450?text=Loading..." alt="Product Image" />
+          <span class="zoom-indicator">🔍 Click to zoom</span>
+        </div>
+        <div class="thumbnails-grid" id="thumbnailList">
+          <!-- Small photo thumbnails load here -->
+        </div>
+      </section>
+
+      <!-- Right Column: Product & Seller Information -->
+      <section class="info-column">
+        <div class="category-tag" id="detailCategory">Category</div>
+        <h1 class="detail-title" id="detailTitle">Loading product...</h1>
+        
+        <div class="price-row">
+          <span class="detail-price" id="detailPrice">฿0</span>
+          <span class="badge-negotiable hidden" id="detailNegotiable">Negotiable</span>
+        </div>
+
+        <!-- Key Meta Badges -->
+        <div class="meta-badges">
+          <span class="meta-badge" id="detailCondition">✨ Condition - Loading...</span>
+          <span class="meta-badge" id="detailGender">🚻 Gender - Loading...</span>
+          <span class="meta-badge" id="detailSize">📏 Size - Loading...</span>
+          <span class="meta-badge" id="detailLocation">📍 Exchange Location - Loading...</span>
+          <span class="meta-badge" id="detailPayment">💳 Payment Method - Loading...</span>
+        </div>
+
+        <!-- Description Box -->
+        <div class="description-section">
+          <h3>Description</h3>
+          <p id="detailDescription">No description provided by the seller.</p>
+        </div>
+
+        <!-- Seller Profile Card -->
+        <div class="seller-card">
+          <div class="seller-avatar-wrap">
+            <img id="sellerAvatar" src="https://via.placeholder.com/60?text=User" alt="Seller Avatar" />
+          </div>
+          <div class="seller-meta">
+            <h4 id="sellerName">Seller Name</h4>
+            <p id="sellerAcademic">University • Major</p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button id="btnFavoriteDetail" class="btn-detail-secondary">❤️ Add to Favorites</button>
+          <a id="btnContactSeller" href="#" class="btn-detail-primary">💬 Contact Seller</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Fullscreen Image Lightbox Modal -->
+  <div id="imageLightboxModal" class="lightbox-modal hidden">
+    <span class="lightbox-close" id="lightboxClose">&times;</span>
+    <img id="lightboxImg" class="lightbox-img" src="" alt="Large Product Preview" />
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/product.js"></script>
+</body>
+</html>

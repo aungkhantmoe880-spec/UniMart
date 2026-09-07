@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniMart - Sell Your Product</title>
+
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/component.css" />
+  <link rel="stylesheet" href="../css/upload.css" />
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="navbar">
+    <div class="logo">
+      <a href="marketplace.html"><span class="logo-uni">Uni</span><span class="logo-mart">Mart</span></a>
+    </div>
+    <div class="nav-controls">
+      <a href="marketplace.html" class="icon-btn">🏪 Marketplace</a>
+      <a href="messages.html" class="icon-btn">💬 Message</a>
+      <a href="profile.html" class="icon-btn">👤 MyProfile</a>
+    </div>
+  </header>
+
+  <main class="upload-container">
+    <div class="upload-card">
+      <h1 class="upload-title">Sell Your Product!</h1>
+      <p class="upload-subtitle">List your item to sell for peers across campus.</p>
+
+      <form id="uploadForm" class="upload-form">
+        <!-- 4 Image Upload Slots -->
+        <div class="image-upload-grid">
+          <!-- Slot 1: Front -->
+          <div class="image-slot" id="slot-front">
+            <label for="imgFront" class="image-slot-label" id="label-front">
+              <span class="image-slot-icon">📷</span>
+              <span>Front View</span>
+            </label>
+            <input type="file" id="imgFront" name="imgFront" accept="image/*" required />
+            <img id="preview-front" class="slot-preview hide" alt="Front Preview" />
+            <div class="slot-actions hide" id="actions-front">
+              <button type="button" class="btn-slot-view" title="View Full Image">👁️</button>
+              <button type="button" class="btn-slot-delete" title="Delete Photo">✖</button>
+            </div>
+          </div> 
+
+          <!-- Slot 2: Back -->
+          <div class="image-slot" id="slot-back">
+            <label for="imgBack" class="image-slot-label" id="label-back">
+              <span class="image-slot-icon">📷</span>
+              <span>Back View</span>
+            </label>
+            <input type="file" id="imgBack" name="imgBack" accept="image/*" />
+            <img id="preview-back" class="slot-preview hide" alt="Back Preview" />
+            <div class="slot-actions hide" id="actions-back">
+              <button type="button" class="btn-slot-view" title="View Full Image">👁️</button>
+              <button type="button" class="btn-slot-delete" title="Delete Photo">✖</button>
+            </div>
+          </div>
+
+          <!-- Slot 3: Left -->
+          <div class="image-slot" id="slot-left">
+            <label for="imgLeftSide" class="image-slot-label" id="label-left">
+              <span class="image-slot-icon">📷</span>
+              <span>Left Side</span>
+            </label>
+            <input type="file" id="imgLeftSide" name="imgLeftSide" accept="image/*" />
+            <img id="preview-left" class="slot-preview hide" alt="Left Side Preview" />
+            <div class="slot-actions hide" id="actions-left">
+              <button type="button" class="btn-slot-view" title="View Full Image">👁️</button>
+              <button type="button" class="btn-slot-delete" title="Delete Photo">✖</button>
+            </div>
+          </div>
+
+          <!-- Slot 4: Right -->
+          <div class="image-slot" id="slot-right">
+            <label for="imgRightSide" class="image-slot-label" id="label-right">
+              <span class="image-slot-icon">📷</span>
+              <span>Right Side</span>
+            </label>
+            <input type="file" id="imgRightSide" name="imgRightSide" accept="image/*" />
+            <img id="preview-right" class="slot-preview hide" alt="Right Side Preview" />
+            <div class="slot-actions hide" id="actions-right">
+              <button type="button" class="btn-slot-view" title="View Full Image">👁️</button>
+              <button type="button" class="btn-slot-delete" title="Delete Photo">✖</button>
+            </div>
+          </div>   
+        </div>
+
+        <!-- Product Name -->
+        <div class="form-group">
+          <label for="productName" class="form-label">Product Name</label>
+          <input type="text" id="productName" name="productName" class="form-input" placeholder="e.g. Scientific Calculator" required />
+        </div> 
+
+        <!-- Category Dropdown -->
+        <div class="form-group">
+          <label for="productCategory" class="form-label">Category</label>
+          <select id="productCategory" name="productCategory" class="form-select" required>
+            <option value="" disabled selected>Select Category ▾</option>
+            <option value="clothing">👕 Clothing</option>
+            <option value="electronics">💻 Electronics</option>
+            <option value="books">📚 Books & Notes</option>
+            <option value="dorm">🛏️ Dorm Essentials</option>
+            <option value="other">✨ Other (Type Custom)</option>
+          </select>
+          <input type="text" id="customCategoryInput" name="customCategoryInput" class="form-input custom-field-hidden" placeholder="Enter custom category" />
+        </div>
+
+        <!-- Price -->
+        <div class="form-group">
+          <label for="productPrice" class="form-label">Price (฿ THB)</label>
+          <input type="number" id="productPrice" name="productPrice" class="form-input" placeholder="0 for Free" min="0" step="1" required />
+        </div> 
+
+        <!-- Negotiable Checkbox -->
+        <div class="checkbox-group">
+          <label for="isNegotiable" class="checkbox-label">Price is negotiable</label>
+          <input type="checkbox" id="isNegotiable" name="isNegotiable" />
+        </div> 
+
+        <!-- Gender Section (No default selection) -->
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="productGender" value="unisex" />
+              <span>Unisex 🚻</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="productGender" value="male" />
+              <span>Male 🚹</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="productGender" value="female" />
+              <span>Female 🚺</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Size Section (No default selection) -->
+        <div class="form-group">
+          <label class="form-label">Size</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="productSize" value="S" />
+              <span>Small (S)</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="productSize" value="M" />
+              <span>Medium (M)</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="productSize" value="L" />
+              <span>Large (L)</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="productSize" value="XL" />
+              <span>XL</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="productSize" value="XXL" />
+              <span>XXL</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Condition -->
+        <div class="form-group">
+          <label class="form-label">Condition</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="productCondition" value="new" required />
+              <span>New 🆕</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="productCondition" value="like-new" />
+              <span>Like New ✨</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="productCondition" value="used" />
+              <span>Used 📦</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="productCondition" value="other" id="conditionOtherRadio" />
+              <span>Other ✍️</span>
+            </label>
+          </div>
+          <input type="text" id="customConditionInput" name="customConditionInput" class="form-input custom-field-hidden" placeholder="Describe condition (e.g., Minor scratch)" />
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="productDescription" class="form-label">Description (Optional)</label>
+          <textarea id="productDescription" name="productDescription" class="form-textarea" rows="4" placeholder="Mention any details about condition, reason for selling, or usage history..."></textarea>
+        </div> 
+
+        <!-- Pick-up Location -->
+        <div class="form-group">
+          <label for="productLocation" class="form-label">Pick-up Location</label>
+          <input type="text" id="productLocation" name="productLocation" class="form-input" placeholder="e.g., Dorm Hall B, Main Library, Engineering Building" required />
+        </div> 
+
+        <!-- Payment Method -->
+        <div class="form-group">
+          <label class="form-label">Payment Method</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="paymentMethod" value="qr" required />
+              <span>📱 QR Payment</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="paymentMethod" value="transfer" />
+              <span>🏦 Bank Transfer</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="paymentMethod" value="cash" />
+              <span>💵 Cash on Meetup</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="paymentMethod" value="other" id="paymentOtherRadio" />
+              <span>✨ Other</span>
+            </label>
+          </div>
+          <input type="text" id="customPaymentInput" name="customPaymentInput" class="form-input custom-field-hidden" placeholder="Specify payment method (e.g., TrueMoney Wallet)" />
+        </div>
+
+        <!-- Contact Method (No default selection) -->
+        <div class="form-group">
+          <label class="form-label">Preferred Contact Method</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="contactMethod" value="message" />
+              <span>💬 In-App Chat</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="contactMethod" value="line" id="contactLineRadio" />
+              <span>🟢 LINE</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="contactMethod" value="telegram" id="contactTelegramRadio" />
+              <span>✈️ Telegram</span>
+            </label>
+          </div>
+          <input type="text" id="contactHandleInput" name="contactHandleInput" class="form-input custom-field-hidden" placeholder="Enter your LINE ID or Telegram @username" />
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <a href="marketplace.html" class="btn-cancel">Cancel</a>
+          <button type="submit" class="btn-submit">Publish Product</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Marketplace Confirmation Preview Modal -->
+  <div id="previewModal" class="modal-backdrop hide">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Review Your Marketplace Listing</h3>
+        <p class="modal-subtitle">This is how buyers will see your item on campus.</p>
+      </div>
+
+      <div class="product-card-preview">
+        <div class="card-image-wrap">
+          <img id="modalPreviewImg" src="" alt="Listing Image" />
+          <span class="card-badge" id="modalPreviewCategory">Category</span>
+        </div>
+
+        <div class="card-content">
+          <h4 class="card-title" id="modalPreviewTitle">Product Title</h4>
+          <div class="card-price-row">
+            <span class="card-price" id="modalPreviewPrice">฿0</span>
+            <span class="card-negotiable hide" id="modalPreviewNegotiable">Negotiable</span>
+          </div>
+          <div class="card-meta">
+            <span id="modalPreviewGender">🚻 Unisex</span>
+            <span>•</span>
+            <span id="modalPreviewSize">📏 Size: Standard</span>
+            <span>•</span>
+            <span id="modalPreviewCondition">✨ Condition</span>
+            <span>•</span>
+            <span id="modalPreviewLocation">📍 Location</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="btnEditListing" class="btn-cancel">Edit Details</button>
+        <button type="button" id="btnConfirmPublish" class="btn-submit">Confirm & Publish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Photo Lightbox Modal -->
+  <div id="imageLightboxModal" class="upload-lightbox hide">
+    <span class="upload-lightbox-close" id="uploadLightboxClose">&times;</span>
+    <img id="uploadLightboxImg" src="" alt="Full Preview" />
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/upload.js"></script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniMart - My Profile</title>
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/component.css" />
+  <link rel="stylesheet" href="../css/profile.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">
+      <a href="marketplace.html"><span class="logo-uni">Uni</span><span class="logo-mart">Mart</span></a>
+    </div>
+    <div class="nav-actions">
+      <a href="marketplace.html" class="nav-pill-btn">🏪 Marketplace</a>
+      <a href="#" class="nav-pill-btn nav-pill-outline">💬 Message</a>
+      <a href="mylisting.html" class="nav-pill-btn">📦 Manage Inventory</a>
+      <button id="logoutBtn" class="nav-pill-btn nav-pill-danger">🚪 Log Out</button>
+    </div>
+  </header>
+
+  <main class="profile-container">
+    <!-- User Profile Header Card -->
+    <section class="profile-card">
+      <!-- Avatar Container with Actions -->
+    <div class="avatar-upload-container">
+        <div class="avatar-box" id="avatarDisplayBox">
+                <img id="avatarImage" src="" alt="Avatar" class="hidden" />
+             <div class="avatar-placeholder-content" id="avatarPlaceholder">
+            <span class="camera-icon">📷</span>
+            <span class="upload-label-text">Avatar</span>
+        </div>
+    </div>
+
+    <!-- Action buttons overlaid on avatar -->
+    <div class="avatar-overlay-actions hidden" id="avatarOverlay">
+        <button type="button" class="avatar-btn view-btn" id="viewAvatarBtn" title="View Full Picture">🔍</button>
+        <label for="avatarInput" class="avatar-btn reupload-btn" title="Change Photo">✏️</label>
+        <button type="button" class="avatar-btn delete-btn" id="deleteAvatarBtn" title="Delete Avatar">🗑️</button>
+    </div>
+
+    <!-- Hidden File Input -->
+        <input type="file" id="avatarInput" accept="image/*" class="hidden" />
+    </div>
+
+      <div class="profile-details">
+        <div class="profile-header-row">
+          <h2 id="dispFullName">Loading...</h2>
+          <button id="openEditBtn" class="edit-icon-btn" title="Edit Profile">✏️ Edit Profile</button>
+        </div>
+        <p class="profile-meta"><span id="dispStudentId"></span> • <span id="dispAge"></span> yrs</p>
+        <p class="profile-email" id="dispEmail"></p>
+        <p class="profile-academic"><strong id="dispUni"></strong> — <span id="dispFaculty"></span></p>
+        <p class="profile-bio" id="dispBio">No bio provided yet.</p>
+      </div>
+    </section>
+
+    <!-- My Listings & Favorites Tabs -->
+    <section class="profile-tabs-section">
+      <div class="tab-buttons">
+        <button class="tab-btn active" id="tabMyListingsBtn">📦 My Listings (<span id="listingsCount">0</span>)</button>
+        <button class="tab-btn" id="tabFavoritesBtn">❤️ Favorites (<span id="favsCount">0</span>)</button>
+      </div>
+
+      <!-- Listings Grid Container -->
+      <div id="listingsGrid" class="product-grid"></div>
+
+      <!-- Favorites Grid Container -->
+      <div id="favoritesGrid" class="product-grid hidden"></div>
+    </section>
+  </main>
+
+  <!-- Edit Profile Modal Styled like Upload Form -->
+  <div id="editModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Edit Profile</h3>
+        <p class="modal-subtitle">Update your personal and campus details.</p>
+      </div>
+      
+      <form id="editProfileForm">
+        <div class="form-group">
+          <label for="editFullName">Full Name</label>
+          <input type="text" id="editFullName" class="form-input" placeholder="e.g. Alex Smith" required />
+        </div>
+
+        <div class="form-group">
+          <label for="editAge">Age</label>
+          <input type="number" id="editAge" min="15" max="100" class="form-input" placeholder="e.g. 20" required />
+        </div>
+
+        <div class="form-group">
+          <label for="editUniversity">University</label>
+          <input type="text" id="editUniversity" class="form-input" placeholder="e.g. University Name" />
+        </div>
+
+        <div class="form-group">
+          <label for="editFaculty">Faculty / Major</label>
+          <input type="text" id="editFaculty" class="form-input" placeholder="e.g. Digital Innovation Technology" />
+        </div>
+
+        <div class="form-group">
+          <label for="editBio">Bio</label>
+          <textarea id="editBio" rows="3" class="form-input form-textarea" placeholder="Tell peers about yourself..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="closeEditBtn" class="btn-cancel">Cancel</button>
+          <button type="submit" class="btn-save">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Full Avatar Preview Lightbox Modal -->
+    <div id="imageLightboxModal" class="lightbox-modal hidden">
+        <div class="lightbox-content">
+         <button type="button" id="closeLightboxBtn" class="lightbox-close">&times;</button>
+            <img id="lightboxFullImage" src="" alt="Full Avatar Preview" />
+        </div>
+    </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/guard.js"></script>
+  <script src="../js/profile.js"></script>
+</body>
+</html>
