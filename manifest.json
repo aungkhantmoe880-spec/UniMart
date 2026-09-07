@@ -1,6 +1,7 @@
 {
   "name": "UniMart Campus Marketplace",
   "short_name": "UniMart",
+  "description": "Student peer-to-peer campus marketplace",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

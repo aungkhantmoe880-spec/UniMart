@@ -9,6 +9,24 @@
   <link rel="stylesheet" href="../css/global.css" />
   <link rel="stylesheet" href="../css/component.css" />
   <link rel="stylesheet" href="../css/auth.css" />
+
+  <!-- PWA Manifest & Settings -->
+<link rel="manifest" href="../manifest.json" />
+<meta name="theme-color" content="#336af7" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="UniMart" />
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" />
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('../sw.js', { scope: '../' })
+        .then(reg => console.log('SW Registered:', reg.scope))
+        .catch(err => console.error('SW Error:', err));
+    });
+  }
+</script>
 </head> 
 <body>
 
