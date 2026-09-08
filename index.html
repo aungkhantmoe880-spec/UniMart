@@ -7,14 +7,36 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#336af7" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+</head>
+<body>
+
+  <!-- Supabase CDN and Client Configuration -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+
   <script>
+    // 1. Register Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js');
       });
     }
-    window.location.replace('html/login.html');
+
+    // 2. Persistent Session Check & Smart Routing
+    async function checkAuthAndRoute() {
+      try {
+        const { data: { session } } = await window.supabase.auth.getSession();
+        if (session && session.user) {
+          window.location.replace('html/marketplace.html');
+        } else {
+          window.location.replace('html/login.html');
+        }
+      } catch (err) {
+        window.location.replace('html/login.html');
+      }
+    }
+
+    checkAuthAndRoute();
   </script>
-</head>
-<body></body>
+</body>
 </html>

@@ -1,4 +1,21 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // 0. Auto-redirect if an active session already exists (Persistent Login)
+  const hash = window.location.hash;
+  const isRecoveryMode = hash && (hash.includes('type=recovery') || hash.includes('access_token='));
+
+  // Only auto-redirect if the user is NOT actively resetting their password
+  if (!isRecoveryMode && window.supabase?.auth) {
+    try {
+      const { data: { session } } = await window.supabase.auth.getSession();
+      if (session && session.user) {
+        window.location.replace('marketplace.html');
+        return;
+      }
+    } catch (e) {
+      console.warn('Session verification error:', e);
+    }
+  }
+
   // 1. Form elements
   const loginForm = document.getElementById('loginForm');
   const registerForm = document.getElementById('registerForm');
@@ -29,8 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Check if URL hash indicates password recovery
-  const hash = window.location.hash;
-  if (hash && (hash.includes('type=recovery') || hash.includes('access_token='))) {
+  if (isRecoveryMode) {
     showForm(resetPasswordForm);
   }
 
@@ -42,19 +58,19 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Switch to Register form
-  showRegisterLink.addEventListener('click', (e) => {
+  showRegisterLink?.addEventListener('click', (e) => {
     e.preventDefault();
     showForm(registerForm);
   });
 
   // Switch to Login form
-  showLoginLink.addEventListener('click', (e) => {
+  showLoginLink?.addEventListener('click', (e) => {
     e.preventDefault();
     showForm(loginForm);
   });
 
   // Switch to Forgot Password form
-  showForgotLink.addEventListener('click', (e) => {
+  showForgotLink?.addEventListener('click', (e) => {
     e.preventDefault();
     if (forgotError) forgotError.textContent = '';
     if (forgotSuccess) forgotSuccess.textContent = '';
@@ -62,30 +78,30 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Back to Login from Forgot form
-  backToLoginFromForgot.addEventListener('click', (e) => {
+  backToLoginFromForgot?.addEventListener('click', (e) => {
     e.preventDefault();
     showForm(loginForm);
   });
 
   // Register form submission
-  registerForm.addEventListener('submit', async (e) => {
+  registerForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    passwordError.textContent = '';
-    ageError.textContent = '';
-    generalError.textContent = '';
+    if (passwordError) passwordError.textContent = '';
+    if (ageError) ageError.textContent = '';
+    if (generalError) generalError.textContent = '';
 
     const email = document.getElementById('regEmail').value.trim();
     const password = document.getElementById('regPassword').value.trim();
     const age = parseInt(document.getElementById('regAge').value, 10);
 
     if (age < 15) {
-      ageError.textContent = 'You must be at least 15 years old.';
+      if (ageError) ageError.textContent = 'You must be at least 15 years old.';
       return;
     }
 
     if (password.length < 6) {
-      passwordError.textContent = 'Password must be at least 6 characters long.';
+      if (passwordError) passwordError.textContent = 'Password must be at least 6 characters long.';
       return;
     }
 
@@ -95,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (error) {
-      generalError.textContent = error.message;
+      if (generalError) generalError.textContent = error.message;
       return;
     }
 
@@ -117,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ]);
 
       if (profileError) {
-        generalError.textContent = 'Account created, but profile setup failed: ' + profileError.message;
+        if (generalError) generalError.textContent = 'Account created, but profile setup failed: ' + profileError.message;
         return;
       }
     }
@@ -127,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Login form submission
-  loginForm.addEventListener('submit', async (e) => {
+  loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     if (loginError) loginError.textContent = '';
@@ -168,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Forgot Password form submission
-  forgotForm.addEventListener('submit', async (e) => {
+  forgotForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     if (forgotError) forgotError.textContent = '';
@@ -178,8 +194,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('btnSendReset');
     let emailToUse = identifier;
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+    }
 
     try {
       if (!identifier.includes('@')) {
@@ -190,35 +208,38 @@ document.addEventListener('DOMContentLoaded', () => {
           .single();
 
         if (lookupErr || !profile || !profile.email) {
-          forgotError.textContent = 'No account associated with that Student ID.';
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Send Reset Link';
+          if (forgotError) forgotError.textContent = 'No account associated with that Student ID.';
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Reset Link';
+          }
           return;
         }
 
         emailToUse = profile.email;
       }
 
-      // Dynamic redirect URL matching whatever port Live Server is using (5500 or 5501)
-      const currentOrigin = window.location.origin;
-      const redirectUrl = `${currentOrigin}/html/login.html`;
+      // Resolves properly on localhost and GitHub Pages
+      const redirectUrl = new URL('login.html', window.location.href).href;
 
       const { error: resetErr } = await window.supabase.auth.resetPasswordForEmail(emailToUse, {
         redirectTo: redirectUrl
       });
 
       if (resetErr) {
-        forgotError.textContent = resetErr.message;
+        if (forgotError) forgotError.textContent = resetErr.message;
       } else {
-        forgotSuccess.textContent = `A password reset link has been sent to ${emailToUse}. Please check your inbox.`;
+        if (forgotSuccess) forgotSuccess.textContent = `A password reset link has been sent to ${emailToUse}. Please check your inbox.`;
         forgotForm.reset();
       }
     } catch (err) {
-      forgotError.textContent = 'Something went wrong. Please try again.';
+      if (forgotError) forgotError.textContent = 'Something went wrong. Please try again.';
       console.error(err);
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Send Reset Link';
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Reset Link';
+      }
     }
   });
 
@@ -232,24 +253,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('btnUpdatePassword');
 
       if (newPassword.length < 6) {
-        resetError.textContent = 'Password must be at least 6 characters long.';
+        if (resetError) resetError.textContent = 'Password must be at least 6 characters long.';
         return;
       }
 
-      btn.disabled = true;
-      btn.textContent = 'Updating...';
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Updating...';
+      }
 
       const { error } = await window.supabase.auth.updateUser({
         password: newPassword
       });
 
       if (error) {
-        resetError.textContent = error.message;
-        btn.disabled = false;
-        btn.textContent = 'Update Password';
+        if (resetError) resetError.textContent = error.message;
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Update Password';
+        }
       } else {
         alert('Password updated successfully! Please log in with your new password.');
-        // Clear recovery hash from URL bar and return to login
         window.location.hash = '';
         showForm(loginForm);
       }

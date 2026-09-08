@@ -2,9 +2,17 @@
 const SUPABASE_URL = 'https://tpwxadfxxbrrtasfgkjr.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwd3hhZGZ4eGJycnRhc2Zna2pyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyMDQxMTQsImV4cCI6MjEwMzc4MDExNH0.mXt7imVZcnM5ya5fhKRyMQaStQnGedaM9_jsD9h15xg';
 
-// Initialize and expose as both supabase and supabaseClient for consistency
+// Initialize and expose as both supabase and supabaseClient with persistent local storage
 const { createClient } = window.supabase;
-const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,
+    storage: window.localStorage,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
+  }
+});
+
 window.supabase = client;
 window.supabaseClient = client;
 
