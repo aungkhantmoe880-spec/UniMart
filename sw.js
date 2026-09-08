@@ -1,4 +1,4 @@
-const CACHE_NAME = 'unimart-v1';
+const CACHE_NAME = 'unimart-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -32,11 +32,18 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  if (e.request.url.includes('supabase.co') || e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
+
+  // 1. Ignore non-HTTP/HTTPS schemes (such as chrome-extension://)
+  if (!url.protocol.startsWith('http')) return;
+
+  // 2. Ignore non-GET requests and Supabase API calls
+  if (e.request.method !== 'GET' || url.hostname.includes('supabase.co')) return;
+
   e.respondWith(
     fetch(e.request)
       .then((res) => {
-        if (res.status === 200) {
+        if (res && res.status === 200) {
           const copy = res.clone();
           caches.open(CACHE_NAME).then((c) => c.put(e.request, copy));
         }
