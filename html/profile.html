@@ -1,130 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UniMart - My Profile</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>UniMart - Student Profile</title>
+
+  <link rel="manifest" href="../manifest.json" />
+  <meta name="theme-color" content="#006194" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#006194",
+            "primary-container": "#007bb9",
+            "primary-fixed": "#cce5ff",
+            "on-primary-fixed": "#001d31",
+            "on-primary-fixed-variant": "#004b73",
+            "on-primary": "#ffffff",
+            secondary: "#00668a",
+            "secondary-fixed": "#c4e7ff",
+            "on-secondary-fixed": "#001e2c",
+            "secondary-container": "#40c2fd",
+            tertiary: "#b61722",
+            "tertiary-fixed": "#ffdad7",
+            surface: "#f9f9ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f1f3ff",
+            "surface-container": "#e9edff",
+            "surface-container-high": "#e1e8fd",
+            "on-surface": "#141b2b",
+            "on-surface-variant": "#3f4850",
+            outline: "#707881",
+            "outline-variant": "#bfc7d2",
+            "inverse-surface": "#293040",
+            "inverse-on-surface": "#edf0ff",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a"
+          }
+        }
+      }
+    };
+  </script>
+
   <link rel="stylesheet" href="../css/global.css" />
   <link rel="stylesheet" href="../css/component.css" />
   <link rel="stylesheet" href="../css/profile.css" />
 </head>
-<body>
 
-  <!-- Navbar -->
-  <header class="navbar">
-    <div class="logo">
-      <a href="marketplace.html"><span class="logo-uni">Uni</span><span class="logo-mart">Mart</span></a>
-    </div>
-    <div class="nav-actions">
-      <a href="marketplace.html" class="nav-pill-btn">🏪 Marketplace</a>
-      <a href="#" class="nav-pill-btn nav-pill-outline">💬 Message</a>
-      <a href="mylisting.html" class="nav-pill-btn">📦 Manage Inventory</a>
-      <button id="logoutBtn" class="nav-pill-btn nav-pill-danger">🚪 Log Out</button>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col">
+
+  <!-- Desktop Header (Full-width matching Marketplace) -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-surface-container shadow-[0_1px_8px_rgba(0,97,148,0.05)] pt-safe">
+    <div class="h-16 max-w-[1500px] w-full mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 shrink-0">
+        <a href="home.html" class="flex items-center gap-2">
+          <span class="text-2xl font-bold tracking-tight text-primary">Uni<span class="text-on-surface">Mart</span></span>
+        </a>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-6">
+        <a href="home.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Home</a>
+        <a href="marketplace.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Marketplace</a>
+        <a href="upload.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Sell an Item</a>
+        <a href="mylisting.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Inventory</a>
+      </nav>
+
+      <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+        <a href="profile.html" class="flex items-center gap-2 p-1 rounded-full hover:bg-surface-container transition-colors ring-2 ring-primary">
+          <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/60 bg-surface-container flex items-center justify-center">
+            <img id="navUserAvatar" alt="Profile" class="w-full h-full object-cover" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23707881'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" />
+          </div>
+        </a>
+        <button id="logoutBtn" class="w-9 h-9 flex items-center justify-center rounded-lg text-tertiary hover:bg-tertiary-fixed/30 transition-colors" title="Log out" type="button">
+          <span class="material-symbols-outlined text-xl">logout</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <main class="profile-container">
-    <!-- User Profile Header Card -->
-    <section class="profile-card">
-      <!-- Avatar Container with Actions -->
-    <div class="avatar-upload-container">
-        <div class="avatar-box" id="avatarDisplayBox">
-                <img id="avatarImage" src="" alt="Avatar" class="hidden" />
-             <div class="avatar-placeholder-content" id="avatarPlaceholder">
-            <span class="camera-icon">📷</span>
-            <span class="upload-label-text">Avatar</span>
+  <!-- Main Profile Container -->
+  <main class="w-full pt-20 pb-28 md:pb-16 flex-grow">
+    <div class="max-w-[1500px] w-full mx-auto px-4 md:px-8 py-4 flex flex-col gap-6">
+
+      <!-- Breadcrumbs -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-1.5 text-on-surface-variant text-xs md:text-sm">
+          <a href="marketplace.html" class="hover:text-primary transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-base">school</span> Campus Community
+          </a>
+          <span class="text-outline-variant">/</span>
+          <span class="text-on-surface font-semibold">Student Profile</span>
         </div>
-    </div>
-
-    <!-- Action buttons overlaid on avatar -->
-    <div class="avatar-overlay-actions hidden" id="avatarOverlay">
-        <button type="button" class="avatar-btn view-btn" id="viewAvatarBtn" title="View Full Picture">🔍</button>
-        <label for="avatarInput" class="avatar-btn reupload-btn" title="Change Photo">✏️</label>
-        <button type="button" class="avatar-btn delete-btn" id="deleteAvatarBtn" title="Delete Avatar">🗑️</button>
-    </div>
-
-    <!-- Hidden File Input -->
-        <input type="file" id="avatarInput" accept="image/*" class="hidden" />
-    </div>
-
-      <div class="profile-details">
-        <div class="profile-header-row">
-          <h2 id="dispFullName">Loading...</h2>
-          <button id="openEditBtn" class="edit-icon-btn" title="Edit Profile">✏️ Edit Profile</button>
-        </div>
-        <p class="profile-meta"><span id="dispStudentId"></span> • <span id="dispAge"></span> yrs</p>
-        <p class="profile-email" id="dispEmail"></p>
-        <p class="profile-academic"><strong id="dispUni"></strong> — <span id="dispFaculty"></span></p>
-        <p class="profile-bio" id="dispBio">No bio provided yet.</p>
-      </div>
-    </section>
-
-    <!-- My Listings & Favorites Tabs -->
-    <section class="profile-tabs-section">
-      <div class="tab-buttons">
-        <button class="tab-btn active" id="tabMyListingsBtn">📦 My Listings (<span id="listingsCount">0</span>)</button>
-        <button class="tab-btn" id="tabFavoritesBtn">❤️ Favorites (<span id="favsCount">0</span>)</button>
       </div>
 
-      <!-- Listings Grid Container -->
-      <div id="listingsGrid" class="product-grid"></div>
+      <!-- Identity Card -->
+      <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container p-6 md:p-8 relative overflow-hidden">
+        <div class="absolute -right-20 -top-20 w-80 h-80 bg-primary-fixed/20 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+          
+          <!-- Avatar + Personal Information -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            
+            <!-- Circular Avatar Upload Slot -->
+            <div class="relative group shrink-0">
+              <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-surface-container shadow-sm border-2 border-surface-container-high relative cursor-pointer" id="avatarDisplayBox" title="Click to upload profile photo">
+                <img id="avatarImage" alt="Student Avatar" class="w-full h-full object-cover hidden" />
+                <div id="avatarPlaceholder" class="w-full h-full flex flex-col items-center justify-center text-outline gap-1">
+                  <span class="material-symbols-outlined text-3xl">photo_camera</span>
+                  <span class="text-[10px] font-bold uppercase">Upload</span>
+                </div>
+              </div>
+              <input type="file" id="avatarInput" accept="image/*" class="hidden" />
 
-      <!-- Favorites Grid Container -->
-      <div id="favoritesGrid" class="product-grid hidden"></div>
-    </section>
+              <div class="absolute bottom-0 right-0 bg-primary text-on-primary p-1 rounded-full shadow-md flex items-center justify-center border-2 border-surface-container-lowest" title="Verified Campus ID">
+                <span class="material-symbols-outlined text-base">verified</span>
+              </div>
+            </div>
+
+            <!-- Metadata -->
+            <div class="flex flex-col gap-1.5">
+              <div class="flex flex-wrap items-center gap-3">
+                <h1 id="dispFullName" class="text-2xl sm:text-3xl font-bold tracking-tight text-on-surface">Loading...</h1>
+                <button id="openEditBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-semibold transition-colors shadow-xs" type="button">
+                  <span class="material-symbols-outlined text-[15px] text-primary">edit</span>
+                  <span>Edit Profile</span>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-2 text-xs sm:text-sm text-on-surface-variant font-medium">
+                <span id="dispStudentId" class="text-on-surface">ID: --</span>
+                <span class="text-outline-variant">•</span>
+                <span id="dispAge">-- yrs</span>
+                <span class="text-outline-variant">•</span>
+                <span class="inline-flex items-center gap-1 text-primary font-semibold">
+                  <span class="material-symbols-outlined text-xs">school</span> Verified Student
+                </span>
+              </div>
+
+              <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs sm:text-sm">
+                <span id="dispEmail" class="text-on-surface-variant font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm text-outline">mail</span> --
+                </span>
+                <span class="hidden sm:inline text-outline-variant">•</span>
+                <span class="text-on-surface font-semibold flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm text-secondary">domain</span>
+                  <span id="dispUni">University</span> — <span id="dispFaculty">Faculty</span>
+                </span>
+              </div>
+
+              <p id="dispBio" class="text-xs sm:text-sm text-on-surface-variant mt-1 italic">
+                “No bio provided yet.”
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Favorites Section Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-b border-surface-container pb-4">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-on-surface tracking-tight flex items-center gap-2">
+            <span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+            <span>Saved to Favorites</span>
+            <span id="favsCountBadge" class="text-sm font-semibold text-on-surface-variant">(0 items)</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-on-surface-variant mt-0.5">Click any saved card to view its full product details, photos, and seller contacts.</p>
+        </div>
+      </div>
+
+      <!-- Favorites Dynamic Responsive Grid -->
+      <div id="favoritesGrid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 w-full">
+        <p class="col-span-full text-center py-20 text-sm text-outline">Loading your saved favorites...</p>
+      </div>
+
+    </div>
   </main>
 
-  <!-- Edit Profile Modal Styled like Upload Form -->
-  <div id="editModal" class="modal hidden">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Edit Profile</h3>
-        <p class="modal-subtitle">Update your personal and campus details.</p>
+  <!-- Edit Profile Modal -->
+  <div id="editModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
+    <div id="editModalDialog" class="w-full max-w-md rounded-2xl bg-surface-container-lowest shadow-2xl p-6 flex flex-col gap-4 transform scale-95 transition-transform duration-200 border border-surface-container">
+      <div class="flex items-center justify-between border-b border-surface-container pb-3">
+        <h3 class="text-base font-bold text-on-surface flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-primary text-lg">manage_accounts</span> Edit Profile
+        </h3>
+        <button id="closeEditBtn" class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:text-on-surface hover:bg-surface-container transition-colors" type="button">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
       </div>
-      
-      <form id="editProfileForm">
-        <div class="form-group">
-          <label for="editFullName">Full Name</label>
-          <input type="text" id="editFullName" class="form-input" placeholder="e.g. Alex Smith" required />
+
+      <form id="editProfileForm" class="flex flex-col gap-3">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-on-surface" for="editFullName">Full Name</label>
+          <input type="text" id="editFullName" required class="w-full rounded-xl p-2.5 bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:ring-2 focus:ring-primary" />
         </div>
 
-        <div class="form-group">
-          <label for="editAge">Age</label>
-          <input type="number" id="editAge" min="15" max="100" class="form-input" placeholder="e.g. 20" required />
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-on-surface" for="editAge">Age</label>
+          <input type="number" id="editAge" min="15" max="100" required class="w-full rounded-xl p-2.5 bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:ring-2 focus:ring-primary" />
         </div>
 
-        <div class="form-group">
-          <label for="editUniversity">University</label>
-          <input type="text" id="editUniversity" class="form-input" placeholder="e.g. University Name" />
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-on-surface" for="editUniversity">University</label>
+          <input type="text" id="editUniversity" class="w-full rounded-xl p-2.5 bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:ring-2 focus:ring-primary" />
         </div>
 
-        <div class="form-group">
-          <label for="editFaculty">Faculty / Major</label>
-          <input type="text" id="editFaculty" class="form-input" placeholder="e.g. Digital Innovation Technology" />
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-on-surface" for="editFaculty">Faculty / Major</label>
+          <input type="text" id="editFaculty" class="w-full rounded-xl p-2.5 bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:ring-2 focus:ring-primary" />
         </div>
 
-        <div class="form-group">
-          <label for="editBio">Bio</label>
-          <textarea id="editBio" rows="3" class="form-input form-textarea" placeholder="Tell peers about yourself..."></textarea>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-on-surface" for="editBio">Bio</label>
+          <textarea id="editBio" rows="3" class="w-full rounded-xl p-2.5 bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:ring-2 focus:ring-primary resize-none" placeholder="Tell peers about yourself..."></textarea>
         </div>
 
-        <div class="modal-actions">
-          <button type="button" id="closeEditBtn" class="btn-cancel">Cancel</button>
-          <button type="submit" class="btn-save">Save Changes</button>
+        <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-surface-container">
+          <button type="button" id="cancelEditBtn" class="px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-semibold transition-colors">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold shadow-sm transition-colors">Save Changes</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Full Avatar Preview Lightbox Modal -->
-    <div id="imageLightboxModal" class="lightbox-modal hidden">
-        <div class="lightbox-content">
-         <button type="button" id="closeLightboxBtn" class="lightbox-close">&times;</button>
-            <img id="lightboxFullImage" src="" alt="Full Avatar Preview" />
-        </div>
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-surface-container shadow-[0_-2px_12px_rgba(0,102,138,0.08)] pb-safe">
+    <div class="flex items-center justify-around h-16 px-2">
+      <a href="home.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">home</span>
+        <span class="text-[11px]">Home</span>
+      </a>
+      <a href="marketplace.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">storefront</span>
+        <span class="text-[11px]">Market</span>
+      </a>
+      <a href="upload.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">add_circle</span>
+        <span class="text-[11px]">Sell</span>
+      </a>
+      <a href="mylisting.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+        <span class="text-[11px]">Inventory</span>
+      </a>
     </div>
+  </nav>
 
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js"></script>
   <script src="../js/supabase.js"></script>
