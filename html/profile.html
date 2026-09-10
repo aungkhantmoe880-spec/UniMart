@@ -55,7 +55,7 @@
 
 <body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col">
 
-  <!-- Desktop Header (Full-width matching Marketplace) -->
+  <!-- Desktop Header -->
   <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-surface-container shadow-[0_1px_8px_rgba(0,97,148,0.05)] pt-safe">
     <div class="h-16 max-w-[1500px] w-full mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3 shrink-0">
@@ -108,18 +108,33 @@
           <!-- Avatar + Personal Information -->
           <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             
-            <!-- Circular Avatar Upload Slot -->
+            <!-- Circular Avatar with View / Edit / Delete Overlay -->
             <div class="relative group shrink-0">
-              <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-surface-container shadow-sm border-2 border-surface-container-high relative cursor-pointer" id="avatarDisplayBox" title="Click to upload profile photo">
+              <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-surface-container shadow-sm border-2 border-surface-container-high relative" id="avatarDisplayBox">
                 <img id="avatarImage" alt="Student Avatar" class="w-full h-full object-cover hidden" />
-                <div id="avatarPlaceholder" class="w-full h-full flex flex-col items-center justify-center text-outline gap-1">
+                <div id="avatarPlaceholder" class="w-full h-full flex flex-col items-center justify-center text-outline gap-1 cursor-pointer">
                   <span class="material-symbols-outlined text-3xl">photo_camera</span>
                   <span class="text-[10px] font-bold uppercase">Upload</span>
                 </div>
+
+                <!-- Hover action bar overlay -->
+                <div id="avatarOverlay" class="absolute inset-0 bg-inverse-surface/60 backdrop-blur-xs flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity rounded-full hidden">
+                  <button type="button" id="viewAvatarBtn" class="w-7 h-7 rounded-full bg-white text-on-surface hover:text-primary flex items-center justify-center shadow-sm transition-transform active:scale-95" title="View Full Picture">
+                    <span class="material-symbols-outlined text-sm">visibility</span>
+                  </button>
+                  <label for="avatarInput" class="w-7 h-7 rounded-full bg-white text-on-surface hover:text-primary flex items-center justify-center shadow-sm transition-transform active:scale-95 cursor-pointer" title="Change Photo">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </label>
+                  <button type="button" id="deleteAvatarBtn" class="w-7 h-7 rounded-full bg-white text-tertiary hover:bg-error-container flex items-center justify-center shadow-sm transition-transform active:scale-95" title="Delete Avatar">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
               </div>
+              
+              <!-- Hidden File Input -->
               <input type="file" id="avatarInput" accept="image/*" class="hidden" />
 
-              <div class="absolute bottom-0 right-0 bg-primary text-on-primary p-1 rounded-full shadow-md flex items-center justify-center border-2 border-surface-container-lowest" title="Verified Campus ID">
+              <div class="absolute bottom-0 right-0 bg-primary text-on-primary p-1 rounded-full shadow-md flex items-center justify-center border-2 border-surface-container-lowest pointer-events-none" title="Verified Campus ID">
                 <span class="material-symbols-outlined text-base">verified</span>
               </div>
             </div>
@@ -184,6 +199,14 @@
 
     </div>
   </main>
+
+  <!-- Fullscreen Avatar Lightbox Modal -->
+  <div id="avatarLightboxModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-200 cursor-zoom-out">
+    <button id="closeAvatarLightboxBtn" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer" type="button" title="Close">
+      <span class="material-symbols-outlined text-2xl">close</span>
+    </button>
+    <img id="avatarLightboxImg" src="" alt="Full Avatar View" class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl transition-transform duration-200 cursor-default" />
+  </div>
 
   <!-- Edit Profile Modal -->
   <div id="editModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
