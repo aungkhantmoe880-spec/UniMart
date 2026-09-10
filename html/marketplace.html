@@ -1,60 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>UniMart - Campus Marketplace</title>
-  
-  <!-- CSS Stylesheets -->
+
+  <!-- PWA Settings -->
+  <link rel="manifest" href="../manifest.json" />
+  <meta name="theme-color" content="#006194" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#006194",
+            "primary-container": "#007bb9",
+            "primary-fixed": "#cce5ff",
+            "on-primary-fixed-variant": "#004b73",
+            "on-primary": "#ffffff",
+            secondary: "#00668a",
+            "secondary-fixed": "#c4e7ff",
+            "on-secondary-fixed": "#001e2c",
+            tertiary: "#b61722",
+            "tertiary-fixed": "#ffdad7",
+            surface: "#f9f9ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f1f3ff",
+            "surface-container": "#e9edff",
+            "surface-container-high": "#e1e8fd",
+            "on-surface": "#141b2b",
+            "on-surface-variant": "#3f4850",
+            outline: "#707881",
+            "outline-variant": "#bfc7d2",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a"
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Project Stylesheets -->
   <link rel="stylesheet" href="../css/global.css" />
   <link rel="stylesheet" href="../css/component.css" />
   <link rel="stylesheet" href="../css/marketplace.css" />
 </head>
-<body>
 
-  <!-- Navigation Bar -->
-  <header class="navbar">
-    <!-- 1. Left Side: Logo -->
-    <div class="logo">
-      <a href="marketplace.html"><span class="logo-uni">Uni</span><span class="logo-mart">Mart</span></a>
-    </div>
+<body class="bg-surface text-on-surface antialiased flex flex-col min-h-screen">
 
-    <!-- 2. Middle: Search Bar -->
-    <div class="search-container">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Search textbooks, uniforms, electronics..." />
-    </div>
-
-    <!-- 3. Right Side: Unified Action & Navigation Controls -->
-    <div class="nav-controls">
-      <!-- Category Dropdown -->
-      <div class="category-dropdown">
-        <button id="categoryDropdownBtn" class="dropdown-toggle" type="button">
-          Categories ▾
-        </button>
-        <ul id="categoryMenu" class="dropdown-menu">
-          <li data-category="all">📦 All Items</li>
-          <li data-category="clothing">👕 Clothing</li>
-          <li data-category="electronics">💻 Electronics</li>
-          <li data-category="books">📚 Books & Notes</li>
-          <li data-category="dorm">🛏️ Dorm Essentials</li>
-        </ul>
+  <!-- Universal Responsive Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-surface-container shadow-[0_1px_8px_rgba(0,97,148,0.05)] pt-safe">
+    <div class="h-16 max-w-[1500px] mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3 shrink-0">
+        <a href="marketplace.html" class="flex items-center gap-2">
+          <span class="text-2xl font-bold tracking-tight text-primary">Uni<span class="text-on-surface">Mart</span></span>
+        </a>
       </div>
 
-      <!-- Action Buttons -->
-      <a href="upload.html" class="btn-upload">+ Upload</a>
-      <a href="mylisting.html" class="icon-btn">📦 My Listings</a>
-      <a href="messages.html" class="icon-btn" title="Messages">💬 Message</a>
-      <a href="profile.html" class="icon-btn" title="Profile">👤 MyProfile</a>
+      <!-- Desktop Navigation Links -->
+      <nav class="hidden md:flex items-center gap-6">
+        <a href="marketplace.html" class="py-5 font-semibold text-primary border-b-2 border-primary text-sm">Marketplace</a>
+        <a href="upload.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Sell an Item</a>
+        <a href="mylisting.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">My Inventory</a>
+        <a href="messages.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Messages</a>
+      </nav>
+
+      <!-- Right Action Items (Profile & Logout) -->
+      <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+        <a href="profile.html" class="flex items-center gap-2 p-1 rounded-full hover:bg-surface-container transition-colors">
+          <div class="relative">
+            <img id="navUserAvatar" alt="User Profile" class="w-8 h-8 rounded-full object-cover bg-surface-container" src="https://via.placeholder.com/150?text=U" />
+            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-surface-container-lowest"></span>
+          </div>
+          <span id="navUserName" class="hidden xl:inline-block text-xs font-semibold text-on-surface">Student</span>
+        </a>
+        <button id="logoutBtn" class="w-9 h-9 flex items-center justify-center rounded-lg text-tertiary hover:bg-tertiary-fixed/30 transition-colors" title="Log out" type="button">
+          <span class="material-symbols-outlined text-xl">logout</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- Product Grid Container -->
-  <main id="productsGrid" class="product-grid marketplace-grid">
-    <!-- Dynamic cards load here -->
+  <!-- Main Content View -->
+  <main class="w-full pt-16 pb-24 md:pb-12 bg-surface flex-grow">
+    <div class="w-full max-w-[1500px] mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col gap-6">
+      
+      <!-- Top Title & Stats Banner -->
+      <section class="flex flex-col gap-4">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div class="flex flex-col gap-1">
+            <span class="w-fit text-[11px] uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-semibold">Campus Marketplace</span>
+            <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-on-surface">Explore the Marketplace</h1>
+            <p class="text-sm md:text-base text-on-surface-variant max-w-2xl">Find affordable textbooks, tech, uniforms, and dorm gear traded peer-to-peer on campus.</p>
+          </div>
+          
+          <div class="hidden lg:flex items-center bg-surface-container-low px-4 py-2 rounded-xl shadow-sm border border-surface-container">
+            <div class="text-center pr-4 border-r border-surface-container">
+              <span id="statActivePosts" class="block text-xl font-bold text-on-surface">0</span>
+              <span class="text-xs text-outline">Active Posts</span>
+            </div>
+            <div class="text-center pl-4">
+              <span class="block text-xl font-bold text-primary">100%</span>
+              <span class="text-xs text-outline">Student Verified</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="w-full relative flex items-center bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container hover:shadow-md transition-shadow">
+          <span class="material-symbols-outlined absolute left-4 text-on-surface-variant text-xl pointer-events-none">search</span>
+          <input id="searchInput" class="w-full h-12 md:h-14 pl-12 pr-28 rounded-xl bg-transparent text-sm md:text-base text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Search textbooks, dorm essentials, tech..." type="text" />
+          
+          <div class="absolute right-2.5 flex items-center gap-2">
+            <button id="mobileFilterToggleBtn" class="lg:hidden h-8 px-2.5 rounded-lg bg-surface-container text-primary flex items-center gap-1 text-xs font-semibold" type="button">
+              <span class="material-symbols-outlined text-[16px]">tune</span>
+              <span>Filters</span>
+            </button>
+            <button class="hidden sm:flex h-9 w-9 rounded-lg bg-primary hover:bg-primary-container text-on-primary items-center justify-center transition-colors" type="button">
+              <span class="material-symbols-outlined text-lg leading-none">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Horizontal Scrollable Category Pills -->
+        <div class="flex lg:hidden items-center gap-2 overflow-x-auto no-scrollbar py-1">
+          <button class="category-pill active flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-primary text-on-primary shadow-sm" data-category="all">All Items</button>
+          <button class="category-pill flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-surface-container-lowest text-on-surface-variant shadow-sm" data-category="books">Textbooks</button>
+          <button class="category-pill flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-surface-container-lowest text-on-surface-variant shadow-sm" data-category="electronics">Electronics</button>
+          <button class="category-pill flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-surface-container-lowest text-on-surface-variant shadow-sm" data-category="dorm">Dorm Essentials</button>
+          <button class="category-pill flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-surface-container-lowest text-on-surface-variant shadow-sm" data-category="clothing">Clothing</button>
+          <button class="category-pill flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-surface-container-lowest text-on-surface-variant shadow-sm" data-category="other">Other</button>
+        </div>
+
+        <!-- Mobile Expandable Filter Drawer -->
+        <div id="mobileFilterDrawer" class="hidden lg:hidden flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-surface-container">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-on-surface flex items-center gap-1">
+              <span class="material-symbols-outlined text-base text-primary">filter_list</span> Refine Items
+            </span>
+            <button id="mobileClearFiltersBtn" class="text-xs text-tertiary font-semibold" type="button">Reset</button>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button class="mobile-price-btn py-1.5 px-2 rounded-lg bg-surface-container-lowest text-xs font-medium" data-min="0" data-max="500">Under ฿500</button>
+            <button class="mobile-price-btn py-1.5 px-2 rounded-lg bg-surface-container-lowest text-xs font-medium" data-min="500" data-max="1000">฿500 – ฿1,000</button>
+            <button class="mobile-price-btn py-1.5 px-2 rounded-lg bg-surface-container-lowest text-xs font-medium" data-min="1000" data-max="3000">฿1,000 – ฿3,000</button>
+            <button class="mobile-price-btn py-1.5 px-2 rounded-lg bg-surface-container-lowest text-xs font-medium" data-min="3000" data-max="999999">฿3,000+</button>
+          </div>
+        </div>
+
+        <!-- Status Counts & Sort Dropdown -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 border-t border-surface-container/60">
+          <div class="flex items-center gap-2 text-xs md:text-sm text-on-surface-variant">
+            <span id="resultsCountSummary" class="font-semibold text-on-surface">Loading products...</span>
+            <span class="inline-flex w-1.5 h-1.5 rounded-full bg-primary/40"></span>
+            <span class="text-primary font-medium">Safe Dorm Pickup</span>
+          </div>
+          <div class="flex items-center gap-2 self-end sm:self-auto">
+            <span class="text-xs font-semibold text-on-surface-variant">Sort:</span>
+            <select id="sortSelect" class="bg-surface-container-lowest text-xs font-semibold text-on-surface pl-2 pr-6 py-1.5 rounded-lg border border-surface-container shadow-sm cursor-pointer focus:outline-none">
+              <option value="newest">Newest First</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2-Column Responsive Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left Sidebar (Desktop Only) -->
+        <aside class="hidden lg:flex lg:col-span-3 flex-col gap-6 sticky top-24 bg-surface-container-lowest p-5 rounded-xl border border-surface-container shadow-sm">
+          
+          <!-- Category List -->
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center justify-between pb-1">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-on-surface">Categories</h2>
+            </div>
+            <div id="desktopCategoryList" class="flex flex-col gap-1">
+              <button class="category-pill active flex items-center justify-between px-3 py-2 rounded-lg bg-primary text-on-primary text-xs font-semibold transition-colors" data-category="all">
+                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-base">apps</span> All Categories</span>
+              </button>
+              <button class="category-pill flex items-center justify-between px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low text-xs font-semibold transition-colors" data-category="books">
+                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-base">menu_book</span> Textbooks & Notes</span>
+              </button>
+              <button class="category-pill flex items-center justify-between px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low text-xs font-semibold transition-colors" data-category="electronics">
+                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-base">devices</span> Electronics</span>
+              </button>
+              <button class="category-pill flex items-center justify-between px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low text-xs font-semibold transition-colors" data-category="dorm">
+                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-base">bed</span> Dorm Essentials</span>
+              </button>
+              <button class="category-pill flex items-center justify-between px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low text-xs font-semibold transition-colors" data-category="clothing">
+                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-base">checkroom</span> Clothing</span>
+              </button>
+              <button class="category-pill flex items-center justify-between px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low text-xs font-semibold transition-colors" data-category="other">
+                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-base">category</span> Other</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="h-px bg-surface-container"></div>
+
+          <!-- Price Filter -->
+          <div class="flex flex-col gap-3">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-on-surface">Price Range (฿)</h2>
+            <div class="flex items-center gap-2">
+              <input id="priceMinInput" class="w-full pl-3 pr-2 py-1.5 text-xs rounded-lg bg-surface-container-low border border-surface-container outline-none" placeholder="Min" type="number" />
+              <span class="text-outline text-xs">-</span>
+              <input id="priceMaxInput" class="w-full pl-3 pr-2 py-1.5 text-xs rounded-lg bg-surface-container-low border border-surface-container outline-none" placeholder="Max" type="number" />
+              <button id="priceFilterGoBtn" class="px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-semibold" type="button">Go</button>
+            </div>
+          </div>
+
+          <div class="h-px bg-surface-container"></div>
+
+          <!-- Condition Filter -->
+          <div class="flex flex-col gap-2">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-on-surface">Condition</h2>
+            <div class="flex flex-col gap-2 text-xs text-on-surface-variant">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input class="condition-filter accent-primary w-4 h-4" type="checkbox" value="new" />
+                <span>Brand New</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input class="condition-filter accent-primary w-4 h-4" type="checkbox" value="like-new" />
+                <span>Like New</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input class="condition-filter accent-primary w-4 h-4" type="checkbox" value="used" />
+                <span>Used / Good</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="h-px bg-surface-container"></div>
+
+          <!-- Clear Filters -->
+          <button id="desktopClearFiltersBtn" class="w-full py-2 text-center text-xs font-semibold text-outline hover:text-tertiary flex items-center justify-center gap-1" type="button">
+            <span class="material-symbols-outlined text-base">restart_alt</span>
+            <span>Reset All Filters</span>
+          </button>
+        </aside>
+
+        <!-- Right Main: Dynamic Product Feed -->
+        <section class="lg:col-span-9 flex flex-col gap-6">
+          <div id="productsGrid" class="w-full">
+            <!-- Dynamic Cards Populated by js/marketplace.js -->
+            <p class="col-span-full text-center py-16 text-sm text-outline">Loading campus items...</p>
+          </div>
+        </section>
+      </div>
+
+    </div>
   </main>
 
-  <!-- JavaScript Scripts -->
+  <!-- Mobile Fixed Bottom Navigation Bar -->
+  <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-surface-container shadow-[0_-2px_12px_rgba(0,102,138,0.08)] pb-safe">
+    <div class="flex items-center justify-around h-16 px-2">
+      <a href="marketplace.html" class="mobile-nav-item active flex flex-col items-center justify-center gap-1 min-w-[50px]">
+        <span class="material-symbols-outlined text-[22px]">storefront</span>
+        <span class="text-[11px]">Market</span>
+      </a>
+      <a href="upload.html" class="mobile-nav-item flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">add_circle</span>
+        <span class="text-[11px]">Sell</span>
+      </a>
+      <a href="mylisting.html" class="mobile-nav-item flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+        <span class="text-[11px]">Inventory</span>
+      </a>
+      <a href="messages.html" class="mobile-nav-item flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">chat</span>
+        <span class="text-[11px]">Chat</span>
+      </a>
+      <a href="profile.html" class="mobile-nav-item flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">person</span>
+        <span class="text-[11px]">Profile</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js"></script>
   <script src="../js/supabase.js"></script>
