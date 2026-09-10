@@ -1,4 +1,4 @@
-const CACHE_NAME = 'unimart-v4';
+const CACHE_NAME = 'unimart-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -8,9 +8,11 @@ const ASSETS = [
   './css/marketplace.css',
   './css/product.css',
   './css/upload.css',
+  './css/profile.css',
   './js/config.js',
   './js/supabase.js',
   './js/guard.js',
+  './js/home.js',
   './html/home.html',
   './html/marketplace.html',
   './html/login.html',

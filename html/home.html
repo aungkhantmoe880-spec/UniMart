@@ -3,11 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>UniMart - Home</title>
+  <title>UniMart | Campus Marketplace</title>
 
   <link rel="manifest" href="../manifest.json" />
   <meta name="theme-color" content="#006194" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -25,6 +31,7 @@
             secondary: "#00668a",
             "secondary-fixed": "#c4e7ff",
             "on-secondary-fixed": "#001e2c",
+            "secondary-container": "#40c2fd",
             tertiary: "#b61722",
             "tertiary-fixed": "#ffdad7",
             surface: "#f9f9ff",
@@ -35,7 +42,11 @@
             "on-surface": "#141b2b",
             "on-surface-variant": "#3f4850",
             outline: "#707881",
-            "outline-variant": "#bfc7d2"
+            "outline-variant": "#bfc7d2",
+            "inverse-surface": "#17181c",
+            "inverse-on-surface": "#edf0ff",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a"
           }
         }
       }
@@ -46,45 +57,311 @@
   <link rel="stylesheet" href="../css/component.css" />
 </head>
 
-<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col">
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
 
-  <!-- Desktop Header -->
-  <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-surface-container shadow-[0_1px_8px_rgba(0,97,148,0.05)] pt-safe">
-    <div class="h-16 max-w-[1500px] w-full mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3 shrink-0">
-        <a href="home.html" class="flex items-center gap-2">
-          <span class="text-2xl font-bold tracking-tight text-primary">Uni<span class="text-on-surface">Mart</span></span>
+  <!-- Red Authentication Warning Toast -->
+  <div id="authWarningToast" class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] transform -translate-y-16 opacity-0 pointer-events-none transition-all duration-300 w-[90%] max-w-md">
+    <div class="bg-red-600 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center justify-between gap-3 border border-red-500">
+      <div class="flex items-center gap-2.5">
+        <span class="material-symbols-outlined text-2xl animate-bounce">lock</span>
+        <div>
+          <p class="font-bold text-sm tracking-wide">Log in or Register First!</p>
+          <p class="text-[11px] text-red-100">Please sign in with your student account to access this page.</p>
+        </div>
+      </div>
+      <a href="login.html" class="px-3.5 py-1.5 bg-white text-red-600 text-xs font-bold rounded-xl shadow hover:bg-red-50 transition-colors whitespace-nowrap">
+        Log In
+      </a>
+    </div>
+  </div>
+
+  <!-- Hero & Navigation Container -->
+  <section class="text-white pt-3 sm:pt-5 pb-20 sm:pb-28 px-4 sm:px-8 lg:px-16 relative overflow-hidden" style="background: linear-gradient(135deg, rgb(2, 132, 199) 0%, rgb(3, 105, 161) 45%, rgb(7, 89, 133) 100%);">
+    
+    <!-- Top Header -->
+    <header class="max-w-[1500px] w-full mx-auto flex items-center justify-between py-2 mb-10 sm:mb-16">
+      <div class="flex items-center gap-3">
+        <a href="home.html" class="flex items-center gap-1">
+          <span class="text-2xl font-bold tracking-tight text-[#38bdf8]">Uni<span class="text-white">Mart</span></span>
         </a>
       </div>
 
-      <nav class="hidden md:flex items-center gap-6">
-        <a href="home.html" class="py-5 font-semibold text-primary border-b-2 border-primary text-sm">Home</a>
-        <a href="marketplace.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Marketplace</a>
-        <a href="upload.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Sell an Item</a>
-        <a href="mylisting.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Inventory</a>
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-gray-200">
+        <a href="home.html" class="text-white font-semibold border-b-2 border-white pb-0.5">Home</a>
+        <a href="marketplace.html" class="auth-restricted-link hover:text-white transition-colors">Marketplace</a>
+        <a href="upload.html" class="auth-restricted-link hover:text-white transition-colors">Sell an Item</a>
+        <a href="mylisting.html" class="auth-restricted-link hover:text-white transition-colors">Inventory</a>
       </nav>
 
-      <div class="flex items-center gap-2 sm:gap-4 shrink-0">
-        <a href="profile.html" class="flex items-center gap-2 p-1 rounded-full hover:bg-surface-container transition-colors">
-          <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/60 bg-surface-container flex items-center justify-center">
-            <img id="navUserAvatar" alt="Profile" class="w-full h-full object-cover" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23707881'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" />
+      <!-- Right Profile / Auth Actions -->
+      <div class="flex items-center gap-3 sm:gap-4">
+        <a href="profile.html" class="auth-restricted-link flex items-center gap-2 p-1 rounded-full hover:bg-white/10 transition-colors" title="Account">
+          <div class="w-8 h-8 rounded-full overflow-hidden border border-white/40 bg-sky-900/40 flex items-center justify-center">
+            <img id="navUserAvatar" alt="Profile" class="w-full h-full object-cover" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" />
           </div>
+          <span id="navUserName" class="hidden xl:inline-block text-xs font-semibold text-white">Guest</span>
         </a>
-        <button id="logoutBtn" class="w-9 h-9 flex items-center justify-center rounded-lg text-tertiary hover:bg-tertiary-fixed/30 transition-colors" title="Log out" type="button">
-          <span class="material-symbols-outlined text-xl">logout</span>
+
+        <!-- Sign Out Button (Visible if authenticated) -->
+        <button id="logoutBtn" class="p-1.5 rounded-lg text-rose-200 hover:text-white hover:bg-rose-900/40 transition-colors hidden" title="Log Out" type="button">
+          <span class="material-symbols-outlined text-xl leading-none">logout</span>
         </button>
+
+        <!-- Log In Button (Visible if guest) -->
+        <a id="navLoginBtn" href="login.html" class="px-4 py-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs font-semibold backdrop-blur-sm transition-all">
+          Log In
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero Content -->
+    <div class="max-w-4xl mx-auto text-center mt-4 sm:mt-6 mb-8 flex flex-col items-center">
+      <!-- Tag -->
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md mb-4 text-sky-100 text-xs font-semibold uppercase tracking-wider">
+        <span class="material-symbols-outlined text-sm text-secondary-fixed">school</span>
+        <span>Campus Peer-to-Peer</span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+        Welcome from our UniMart!
+      </h1>
+
+      <!-- Description -->
+      <p class="mt-4 sm:mt-5 text-xs sm:text-sm md:text-base text-sky-100 max-w-2xl font-normal leading-relaxed">
+        A peer-to-peer campus marketplace reserved strictly for verified students. Safe campus trades, zero middleman fees, and direct face-to-face pickups across university campus.
+      </p>
+
+      <!-- Get Start! CTA -->
+      <div class="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center gap-3">
+        <a href="login.html" id="getStartBtn" class="inline-flex items-center justify-center px-8 py-3.5 bg-white text-slate-800 font-bold text-sm sm:text-base rounded-full shadow-xl hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 gap-2">
+          <span>Get Start!</span>
+          <span class="material-symbols-outlined text-lg">arrow_forward</span>
+        </a>
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="flex items-center gap-5 mt-6 text-sky-100 text-xs font-medium">
+        <div class="flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">verified</span>
+          <span>Verified Students Only</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">payments</span>
+          <span>0% Commission</span>
+        </div>
       </div>
     </div>
-  </header>
+  </section>
 
-  <!-- Blank Home Body Placeholder -->
-  <main class="w-full pt-20 pb-28 md:pb-16 flex-grow flex items-center justify-center">
-    <div class="max-w-[1500px] w-full mx-auto px-4 md:px-8 py-16 flex flex-col items-center justify-center text-center gap-3 text-outline">
-      <span class="material-symbols-outlined text-5xl text-primary">storefront</span>
-      <h2 class="text-xl font-bold text-on-surface">Home Screen</h2>
-      <p class="text-sm text-on-surface-variant">Your campus feed will appear here soon.</p>
+  <!-- Campus Workflow Section -->
+  <main class="flex-grow max-w-[1500px] w-full mx-auto px-4 sm:px-8 lg:px-16 pt-12 pb-16">
+    <div class="flex flex-col sm:flex-row sm:items-baseline justify-between mb-10 pb-4 border-b border-gray-200 gap-4">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-sky-600 bg-sky-50 px-3 py-1 rounded-full inline-block mb-2">Campus Workflow</span>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">How to Use UniMart</h2>
+      </div>
+      <p class="text-xs sm:text-sm text-gray-500 max-w-md">Follow our 4-step program flow designed specifically for verified student-to-student transactions.</p>
+    </div>
+
+    <!-- 4-Step Flowchart -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Step 1: Register -->
+      <div class="relative bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between">
+        <div class="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-sky-600 text-white font-mono font-bold text-[11px] tracking-wide shadow-sm">
+          STEP 01
+        </div>
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-2xl">person_add</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-sky-600 transition-colors">Register</h3>
+          <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+            Register with your student ID and Email for verified university-wide access and trusted credentials.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-[11px] font-medium text-emerald-600">
+          <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Student Verification</span>
+          <span class="material-symbols-outlined text-sm text-gray-400 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+      </div>
+
+      <!-- Step 2: Marketplace -->
+      <div class="relative bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between">
+        <div class="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-sky-600 text-white font-mono font-bold text-[11px] tracking-wide shadow-sm">
+          STEP 02
+        </div>
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-2xl">storefront</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-sky-600 transition-colors">Marketplace</h3>
+          <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+            Browse verified campus listings and buy products from peers with direct campus meetups.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-[11px] font-medium text-sky-600">
+          <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>Zero Middleman Fees</span>
+          <span class="material-symbols-outlined text-sm text-gray-400 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+      </div>
+
+      <!-- Step 3: Sell an Item -->
+      <div class="relative bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between">
+        <div class="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-sky-600 text-white font-mono font-bold text-[11px] tracking-wide shadow-sm">
+          STEP 03
+        </div>
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-2xl">add_circle</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-sky-600 transition-colors">Sell an Item</h3>
+          <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+            List and sell your product easily to students on campus with fast pricing and quick photo uploads.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-[11px] font-medium text-amber-600">
+          <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Instant Listing</span>
+          <span class="material-symbols-outlined text-sm text-gray-400 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+      </div>
+
+      <!-- Step 4: Inventory -->
+      <div class="relative bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between">
+        <div class="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-sky-600 text-white font-mono font-bold text-[11px] tracking-wide shadow-sm">
+          STEP 04
+        </div>
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-2xl">inventory_2</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-sky-600 transition-colors">Inventory</h3>
+          <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+            Manage your selling products, track sold items, and edit listings anytime with realtime status controls.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-[11px] font-medium text-purple-600">
+          <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>Live Status Control</span>
+          <span class="text-[10px] font-bold text-gray-400 font-mono">DONE</span>
+        </div>
+      </div>
+
     </div>
   </main>
+
+  <!-- Group 4 Contributors Table -->
+  <section class="bg-[#111215] text-white py-14 px-4 sm:px-8 lg:px-16 border-t border-gray-800">
+    <div class="max-w-[1500px] w-full mx-auto">
+      <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-gray-800 mb-8 gap-4">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 text-sky-400 text-xs font-semibold mb-2">
+            <span class="material-symbols-outlined text-sm">groups</span>
+            <span>Project Contributors</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Created by Group 4</h2>
+        </div>
+        <p class="text-xs sm:text-sm text-gray-400">Digital Innovation Technology • UniMart Project</p>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto rounded-xl border border-gray-800 bg-[#17181c] shadow-2xl">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-gray-800 bg-[#1f2126] text-gray-400 text-xs uppercase tracking-wider">
+              <th class="py-3.5 px-5 font-semibold" scope="col">No.</th>
+              <th class="py-3.5 px-5 font-semibold" scope="col">Student Name</th>
+              <th class="py-3.5 px-5 font-semibold" scope="col">Student ID</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800/70 text-gray-300 text-xs sm:text-sm font-normal">
+            <tr class="hover:bg-neutral-800/40 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-gray-500">01</td>
+              <td class="py-3.5 px-5 font-medium text-white flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-indigo-900/60 text-indigo-300 flex items-center justify-center font-bold text-xs border border-indigo-700/50">1</span>
+                <span>Aung Khant Moe</span>
+              </td>
+              <td class="py-3.5 px-5 font-mono text-gray-300">ID: 250702404056</td>
+            </tr>
+            <tr class="hover:bg-neutral-800/40 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-gray-500">02</td>
+              <td class="py-3.5 px-5 font-medium text-white flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-purple-900/60 text-purple-300 flex items-center justify-center font-bold text-xs border border-purple-700/50">2</span>
+                <span>Tun Thet Paing</span>
+              </td>
+              <td class="py-3.5 px-5 font-mono text-gray-300">ID: 250702403697</td>
+            </tr>
+            <tr class="hover:bg-neutral-800/40 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-gray-500">03</td>
+              <td class="py-3.5 px-5 font-medium text-white flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-teal-900/60 text-teal-300 flex items-center justify-center font-bold text-xs border border-teal-700/50">3</span>
+                <span>May Ingyin</span>
+              </td>
+              <td class="py-3.5 px-5 font-mono text-gray-300">ID: 250702402414</td>
+            </tr>
+            <tr class="hover:bg-neutral-800/40 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-gray-500">04</td>
+              <td class="py-3.5 px-5 font-medium text-white flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-amber-900/60 text-amber-300 flex items-center justify-center font-bold text-xs border border-amber-700/50">4</span>
+                <span>Thazin Phyu</span>
+              </td>
+              <td class="py-3.5 px-5 font-mono text-gray-300">ID: 250702402053</td>
+            </tr>
+            <tr class="hover:bg-neutral-800/40 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-gray-500">05</td>
+              <td class="py-3.5 px-5 font-medium text-white flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-rose-900/60 text-rose-300 flex items-center justify-center font-bold text-xs border border-rose-700/50">5</span>
+                <span>Paing Min Khant</span>
+              </td>
+              <td class="py-3.5 px-5 font-mono text-gray-300">ID: 250702403167</td>
+            </tr>
+            <tr class="hover:bg-neutral-800/40 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-gray-500">06</td>
+              <td class="py-3.5 px-5 font-medium text-white flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-sky-900/60 text-sky-300 flex items-center justify-center font-bold text-xs border border-sky-700/50">6</span>
+                <span>Myo Htet Hein</span>
+              </td>
+              <td class="py-3.5 px-5 font-mono text-gray-300">ID: 240702404508</td>
+            </tr>
+            <tr class="hover:bg-neutral-800/40 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-gray-500">07</td>
+              <td class="py-3.5 px-5 font-medium text-white flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-lime-900/60 text-lime-300 flex items-center justify-center font-bold text-xs border border-lime-700/50">7</span>
+                <span>Hein Htut Thar</span>
+              </td>
+              <td class="py-3.5 px-5 font-mono text-gray-300">ID: 250702404563</td>
+            </tr>
+            <tr class="hover:bg-neutral-800/40 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-gray-500">08</td>
+              <td class="py-3.5 px-5 font-medium text-white flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-cyan-900/60 text-cyan-300 flex items-center justify-center font-bold text-xs border border-cyan-700/50">8</span>
+                <span>Phyo Ko Ko</span>
+              </td>
+              <td class="py-3.5 px-5 font-mono text-gray-300">ID: 240702404718</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400">
+        <p>UniMart Project © 2026</p>
+        <p class="font-medium text-gray-300">Faculty of Digital Innovation Technology</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Site Footer -->
+  <footer class="bg-[#0b0c0e] text-gray-400 py-8 px-4 sm:px-8 lg:px-16 border-t border-gray-800 text-xs">
+    <div class="max-w-[1500px] w-full mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-white tracking-tight">UniMart</span>
+        <span class="text-gray-600">|</span>
+        <span>Peer-to-Peer Student Exchange</span>
+      </div>
+      <p class="text-gray-500">Empowering peer exchange on university grounds</p>
+    </div>
+  </footer>
 
   <!-- Mobile Bottom Navigation Bar -->
   <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-surface-container shadow-[0_-2px_12px_rgba(0,102,138,0.08)] pb-safe">
@@ -93,24 +370,25 @@
         <span class="material-symbols-outlined text-[22px]">home</span>
         <span class="text-[11px]">Home</span>
       </a>
-      <a href="marketplace.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+      <a href="marketplace.html" class="auth-restricted-link flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
         <span class="material-symbols-outlined text-[22px]">storefront</span>
         <span class="text-[11px]">Market</span>
       </a>
-      <a href="upload.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+      <a href="upload.html" class="auth-restricted-link flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
         <span class="material-symbols-outlined text-[22px]">add_circle</span>
         <span class="text-[11px]">Sell</span>
       </a>
-      <a href="mylisting.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+      <a href="mylisting.html" class="auth-restricted-link flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
         <span class="material-symbols-outlined text-[22px]">inventory_2</span>
         <span class="text-[11px]">Inventory</span>
       </a>
     </div>
   </nav>
 
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js"></script>
   <script src="../js/supabase.js"></script>
-  <script src="../js/guard.js"></script>
+  <script src="../js/home.js"></script>
 </body>
 </html>
