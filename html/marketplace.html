@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>UniMart - Campus Marketplace</title>
 
-  <!-- PWA Settings -->
   <link rel="manifest" href="../manifest.json" />
   <meta name="theme-color" content="#006194" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -45,7 +44,6 @@
     };
   </script>
 
-  <!-- Project Stylesheets -->
   <link rel="stylesheet" href="../css/global.css" />
   <link rel="stylesheet" href="../css/component.css" />
   <link rel="stylesheet" href="../css/marketplace.css" />
@@ -53,26 +51,22 @@
 
 <body class="bg-surface text-on-surface antialiased flex flex-col min-h-screen">
 
-  <!-- Universal Responsive Header -->
+  <!-- Desktop Header -->
   <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-surface-container shadow-[0_1px_8px_rgba(0,97,148,0.05)] pt-safe">
-    <div class="h-16 max-w-[1500px] mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
-      
-      <!-- Brand Logo -->
+    <div class="h-16 max-w-[1500px] w-full mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3 shrink-0">
-        <a href="marketplace.html" class="flex items-center gap-2">
+        <a href="home.html" class="flex items-center gap-2">
           <span class="text-2xl font-bold tracking-tight text-primary">Uni<span class="text-on-surface">Mart</span></span>
         </a>
       </div>
 
-      <!-- Desktop Navigation Links -->
       <nav class="hidden md:flex items-center gap-6">
+        <a href="home.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Home</a>
         <a href="marketplace.html" class="py-5 font-semibold text-primary border-b-2 border-primary text-sm">Marketplace</a>
         <a href="upload.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Sell an Item</a>
-        <a href="mylisting.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">My Inventory</a>
-        <a href="messages.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Messages</a>
+        <a href="mylisting.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Inventory</a>
       </nav>
 
-      <!-- Right Action Items (Profile & Logout) -->
       <div class="flex items-center gap-2 sm:gap-4 shrink-0">
         <a href="profile.html" class="flex items-center gap-2 p-1 rounded-full hover:bg-surface-container transition-colors">
           <div class="relative">
@@ -88,7 +82,7 @@
     </div>
   </header>
 
-  <!-- Main Content View -->
+  <!-- Main Marketplace Content -->
   <main class="w-full pt-16 pb-24 md:pb-12 bg-surface flex-grow">
     <div class="w-full max-w-[1500px] mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col gap-6">
       
@@ -175,11 +169,8 @@
 
       <!-- 2-Column Responsive Layout -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
         <!-- Left Sidebar (Desktop Only) -->
         <aside class="hidden lg:flex lg:col-span-3 flex-col gap-6 sticky top-24 bg-surface-container-lowest p-5 rounded-xl border border-surface-container shadow-sm">
-          
-          <!-- Category List -->
           <div class="flex flex-col gap-2">
             <div class="flex items-center justify-between pb-1">
               <h2 class="text-xs font-bold uppercase tracking-wider text-on-surface">Categories</h2>
@@ -242,7 +233,6 @@
 
           <div class="h-px bg-surface-container"></div>
 
-          <!-- Clear Filters -->
           <button id="desktopClearFiltersBtn" class="w-full py-2 text-center text-xs font-semibold text-outline hover:text-tertiary flex items-center justify-center gap-1" type="button">
             <span class="material-symbols-outlined text-base">restart_alt</span>
             <span>Reset All Filters</span>
@@ -252,7 +242,6 @@
         <!-- Right Main: Dynamic Product Feed -->
         <section class="lg:col-span-9 flex flex-col gap-6">
           <div id="productsGrid" class="w-full">
-            <!-- Dynamic Cards Populated by js/marketplace.js -->
             <p class="col-span-full text-center py-16 text-sm text-outline">Loading campus items...</p>
           </div>
         </section>
@@ -261,33 +250,28 @@
     </div>
   </main>
 
-  <!-- Mobile Fixed Bottom Navigation Bar -->
-  <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-surface-container shadow-[0_-2px_12px_rgba(0,102,138,0.08)] pb-safe">
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-surface-container shadow-[0_-2px_12px_rgba(0,102,138,0.08)] pb-safe">
     <div class="flex items-center justify-around h-16 px-2">
-      <a href="marketplace.html" class="mobile-nav-item active flex flex-col items-center justify-center gap-1 min-w-[50px]">
+      <a href="home.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">home</span>
+        <span class="text-[11px]">Home</span>
+      </a>
+      <a href="marketplace.html" class="mobile-nav-item active flex flex-col items-center justify-center gap-1 min-w-[50px] text-primary font-semibold">
         <span class="material-symbols-outlined text-[22px]">storefront</span>
         <span class="text-[11px]">Market</span>
       </a>
-      <a href="upload.html" class="mobile-nav-item flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+      <a href="upload.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
         <span class="material-symbols-outlined text-[22px]">add_circle</span>
         <span class="text-[11px]">Sell</span>
       </a>
-      <a href="mylisting.html" class="mobile-nav-item flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+      <a href="mylisting.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
         <span class="material-symbols-outlined text-[22px]">inventory_2</span>
         <span class="text-[11px]">Inventory</span>
-      </a>
-      <a href="messages.html" class="mobile-nav-item flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
-        <span class="material-symbols-outlined text-[22px]">chat</span>
-        <span class="text-[11px]">Chat</span>
-      </a>
-      <a href="profile.html" class="mobile-nav-item flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
-        <span class="material-symbols-outlined text-[22px]">person</span>
-        <span class="text-[11px]">Profile</span>
       </a>
     </div>
   </nav>
 
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js"></script>
   <script src="../js/supabase.js"></script>
