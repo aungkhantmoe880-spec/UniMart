@@ -1,231 +1,413 @@
+let currentProduct = null;
+let currentSeller = null;
+let currentStudentUser = null;
+let isProductFavorited = false;
+let activeGalleryImages = [];
+
 document.addEventListener('DOMContentLoaded', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const productId = urlParams.get('id');
 
   if (!productId) {
-    alert('No product ID specified.');
+    alert('No product specified.');
     window.location.href = 'marketplace.html';
     return;
   }
 
-  await loadProductDetails(productId);
+  // Load Auth State
+  const { data: { user } } = await window.supabase.auth.getUser();
+  currentStudentUser = user;
+
+  // Fetch product data and load view
+  await loadProductView(productId);
+
+  // Setup Interaction Hooks
+  setupFavoriteHooks();
+  setupContactHooks();
+  setupModalDismissals();
 });
 
-async function loadProductDetails(productId) {
-  // 1. Fetch product record directly
-  const { data: product, error: prodError } = await window.supabase
-    .from('products')
-    .select('*')
-    .eq('id', productId)
-    .single();
-
-  if (prodError || !product) {
-    console.error('Failed to load product:', prodError);
-    alert('Product not found: ' + (prodError?.message || 'Item does not exist'));
-    window.location.href = 'marketplace.html';
-    return;
-  }
-
-  // 2. Fetch seller profile separately to avoid Foreign Key join issues
-  let seller = null;
-  if (product.seller_id) {
-    const { data: profileData } = await window.supabase
-      .from('profiles')
-      .select('full_name, university, faculty, avatar_url')
-      .eq('id', product.seller_id)
+// Load full product and seller data concurrently
+async function loadProductView(productId) {
+  try {
+    const { data: product, error: prodErr } = await window.supabase
+      .from('products')
+      .select('*')
+      .eq('id', productId)
       .single();
-    seller = profileData;
-  }
 
-  // 3. Populate Product Details with explicit descriptive labels
-  document.getElementById('detailTitle').textContent = product.title || 'Untitled Product';
-  document.getElementById('detailCategory').textContent = product.category || 'General';
-  document.getElementById('detailPrice').textContent = `฿${Number(product.price || 0).toLocaleString()}`;
-  
-  // Format values
-  const conditionValue = (product.condition || 'Used').toUpperCase() === 'NEW' ? 'New' : (product.condition || 'Used');
-  
-  // Gender value resolution with fallback
-  let genderValue = 'Unisex';
-  if (product.gender && String(product.gender).trim() !== '') {
-    const gLower = String(product.gender).toLowerCase().trim();
-    genderValue = gLower === 'male' ? 'Male' : gLower === 'female' ? 'Female' : 'Unisex';
-  }
-
-  // Size value resolution with fallback
-  const sizeValue = (product.size && String(product.size).trim() !== '')
-    ? String(product.size).toUpperCase().trim()
-    : 'Free Size / Standard';
-
-  const locationValue = product.location || 'Campus';
-  const paymentValue = (product.payment_method || 'QR / Cash').toUpperCase();
-
-  // Populate Badges safely
-  const conditionElem = document.getElementById('detailCondition');
-  const genderElem = document.getElementById('detailGender');
-  const sizeElem = document.getElementById('detailSize');
-  const locationElem = document.getElementById('detailLocation');
-  const paymentElem = document.getElementById('detailPayment');
-  const descElem = document.getElementById('detailDescription');
-
-  if (conditionElem) conditionElem.textContent = `✨ Condition - ${conditionValue}`;
-  if (genderElem) genderElem.textContent = `🚻 Gender - ${genderValue}`;
-  if (sizeElem) sizeElem.textContent = `📏 Size - ${sizeValue}`;
-  if (locationElem) locationElem.textContent = `📍 Exchange location - ${locationValue}`;
-  if (paymentElem) paymentElem.textContent = `💳 Payment method - ${paymentValue}`;
-  if (descElem) descElem.textContent = product.description || 'No description provided by the seller.';
-
-  if (product.is_negotiable) {
-    document.getElementById('detailNegotiable')?.classList.remove('hidden');
-  }
-
-  // 4. Populate Seller Profile Info
-  if (seller) {
-    document.getElementById('sellerName').textContent = seller.full_name || 'Student Seller';
-    document.getElementById('sellerAcademic').textContent = `${seller.university || 'Campus'} • ${seller.faculty || 'Student'}`;
-    if (seller.avatar_url && seller.avatar_url.trim() !== '') {
-      document.getElementById('sellerAvatar').src = seller.avatar_url;
+    if (prodErr || !product) {
+      alert('Product could not be found.');
+      window.location.href = 'marketplace.html';
+      return;
     }
-  } else {
-    document.getElementById('sellerName').textContent = 'UniMart Student';
-    document.getElementById('sellerAcademic').textContent = 'Campus Seller';
+
+    currentProduct = product;
+
+    // Fetch seller profile details
+    if (product.seller_id) {
+      const { data: profile } = await window.supabase
+        .from('profiles')
+        .select('id, full_name, university, faculty, avatar_url')
+        .eq('id', product.seller_id)
+        .single();
+      currentSeller = profile;
+    }
+
+    // Check if current user favorited this product
+    if (currentStudentUser) {
+      const { data: fav } = await window.supabase
+        .from('favorites')
+        .select('id')
+        .eq('user_id', currentStudentUser.id)
+        .eq('product_id', product.id)
+        .maybeSingle();
+
+      isProductFavorited = Boolean(fav);
+    }
+
+    renderProductData();
+  } catch (err) {
+    console.error('Error loading product details:', err);
   }
-
-  // 5. Setup Multi-Angle Image Gallery & Full-size Lightbox
-  setupImageGallery(product);
-
-  // 6. Connect Action Buttons (Favorites & Contact)
-  setupDetailActions(product);
 }
 
+// Populate UI Elements with Dynamic Data
+function renderProductData() {
+  const p = currentProduct;
+
+  // Breadcrumbs & Status
+  document.getElementById('breadcrumbCategory').textContent = p.category || 'General';
+  document.getElementById('breadcrumbTitle').textContent = p.title || 'Item Details';
+  
+  if (p.status === 'sold') {
+    const badge = document.getElementById('badgeAvailability');
+    badge.classList.remove('text-primary', 'bg-surface-container-low');
+    badge.classList.add('text-tertiary', 'bg-tertiary-fixed/40');
+    badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-tertiary"></span><span class="text-[11px] font-bold tracking-wider uppercase">Sold</span>`;
+  }
+
+  // Title, Category, Price
+  document.getElementById('detailTitle').textContent = p.title || 'Untitled Product';
+  document.getElementById('detailCategory').textContent = p.category || 'General';
+  document.getElementById('detailPrice').textContent = `฿${Number(p.price || 0).toLocaleString()}`;
+
+  if (p.is_negotiable) {
+    document.getElementById('detailNegotiable').classList.remove('hidden');
+  }
+
+  // Condition resolution
+  let conditionText = 'Used (Good)';
+  if (p.condition) {
+    const c = p.condition.toLowerCase();
+    conditionText = c === 'new' ? 'Brand New' : c === 'like-new' ? 'Like New' : 'Used';
+  }
+  document.getElementById('detailCondition').textContent = conditionText;
+
+  // Gender/Fit resolution
+  let genderText = 'Unisex';
+  if (p.gender) {
+    const g = p.gender.toLowerCase();
+    genderText = g === 'male' ? 'Male' : g === 'female' ? 'Female' : 'Unisex';
+  }
+  document.getElementById('detailGender').textContent = genderText;
+
+  // Size, Location, Payment, Description
+  document.getElementById('detailSize').textContent = p.size || 'Standard / Free';
+  document.getElementById('detailLocation').textContent = p.location || 'On Campus';
+  document.getElementById('detailPayment').textContent = (p.payment_method || 'PromptPay QR / Cash').toUpperCase();
+  document.getElementById('detailDescription').textContent = p.description || 'No detailed description provided by the student seller.';
+
+  // Seller Details
+  if (currentSeller) {
+    document.getElementById('sellerName').textContent = currentSeller.full_name || 'UniMart Student';
+    document.getElementById('sellerAcademic').textContent = `${currentSeller.university || 'Campus'} • ${currentSeller.faculty || 'Student'}`;
+    if (currentSeller.avatar_url) {
+      document.getElementById('sellerAvatar').src = currentSeller.avatar_url;
+      document.getElementById('modalSellerAvatar').src = currentSeller.avatar_url;
+    }
+  }
+
+  // Gallery Setup
+  setupImageGallery(p);
+
+  // Sync Favorite Buttons
+  updateFavoriteUI();
+
+  // Contact Method Button Routing
+  configureContactButtons(p);
+}
+
+// Multi-Angle Image Gallery Setup
 function setupImageGallery(product) {
-  const mainImgFrame = document.getElementById('mainImageFrame');
-  const mainImg = document.getElementById('mainDisplayImg');
-  const thumbnailList = document.getElementById('thumbnailList');
-
-  const lightboxModal = document.getElementById('imageLightboxModal');
-  const lightboxImg = document.getElementById('lightboxImg');
-  const lightboxClose = document.getElementById('lightboxClose');
-
-  // Collect all uploaded photo URLs
   const images = [
     { label: 'Front', url: product.image_front_url },
     { label: 'Back', url: product.image_back_url },
     { label: 'Left', url: product.image_left_url },
     { label: 'Right', url: product.image_right_url }
-  ].filter(img => img.url && img.url.trim() !== '');
+  ].filter(item => Boolean(item.url && item.url.trim() !== ''));
 
-  if (images.length === 0) {
-    mainImg.src = 'https://via.placeholder.com/600x450?text=No+Photo';
-    return;
-  }
+  activeGalleryImages = images.length > 0 ? images.map(i => i.url) : ['https://via.placeholder.com/600x450?text=No+Photo'];
 
-  // Set default main photo
-  mainImg.src = images[0].url;
+  const mainImg = document.getElementById('mainDisplayImg');
+  const counter = document.getElementById('galleryCounter');
+  const thumbsContainer = document.getElementById('galleryThumbnails');
 
-  // Build thumbnail slots
-  thumbnailList.innerHTML = images.map((img, index) => `
-    <div class="thumbnail-slot ${index === 0 ? 'active' : ''}" data-url="${img.url}">
-      <img src="${img.url}" alt="${img.label} View" />
-    </div>
+  mainImg.src = activeGalleryImages[0];
+  counter.textContent = `1 / ${activeGalleryImages.length}`;
+
+  thumbsContainer.innerHTML = activeGalleryImages.map((url, idx) => `
+    <button 
+      type="button" 
+      class="thumb-btn w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-surface-container-low border border-surface-container transition-all ${idx === 0 ? 'active' : 'opacity-70 hover:opacity-100'}"
+      data-index="${idx}"
+      data-url="${url}"
+    >
+      <img src="${url}" alt="Thumbnail" class="w-full h-full object-cover" />
+    </button>
   `).join('');
 
-  // Switch displayed photo when clicking thumbnails
-  const thumbs = thumbnailList.querySelectorAll('.thumbnail-slot');
-  thumbs.forEach(slot => {
-    slot.addEventListener('click', () => {
-      thumbs.forEach(t => t.classList.remove('active'));
-      slot.classList.add('active');
-      mainImg.src = slot.getAttribute('data-url');
+  thumbsContainer.querySelectorAll('.thumb-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-index'), 10);
+      const url = btn.getAttribute('data-url');
+
+      mainImg.src = url;
+      counter.textContent = `${idx + 1} / ${activeGalleryImages.length}`;
+
+      thumbsContainer.querySelectorAll('.thumb-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
     });
   });
+}
 
-  // Lightbox opening handler
-  if (mainImgFrame && lightboxModal && lightboxImg) {
-    mainImgFrame.addEventListener('click', () => {
-      lightboxImg.src = mainImg.src;
-      lightboxModal.classList.remove('hidden');
-    });
+// Configure Contact Buttons based on seller preference
+function configureContactButtons(product) {
+  const desktopBtn = document.getElementById('btnContactSeller');
+  const mobileBtn = document.getElementById('btnMobileContact');
+  const desktopLabel = document.getElementById('contactBtnLabel');
+  const mobileLabel = document.getElementById('mobileContactLabel');
 
-    // Close on background click
-    lightboxModal.addEventListener('click', (e) => {
-      if (e.target !== lightboxImg) {
-        lightboxModal.classList.add('hidden');
-      }
-    });
-
-    // Close on 'X' button click
-    if (lightboxClose) {
-      lightboxClose.addEventListener('click', () => {
-        lightboxModal.classList.add('hidden');
-      });
-    }
-
-    // Close on 'Escape' key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !lightboxModal.classList.contains('hidden')) {
-        lightboxModal.classList.add('hidden');
-      }
-    });
+  if (product.contact_method === 'line' && product.contact_handle) {
+    const lineUrl = `https://line.me/ti/p/~${product.contact_handle}`;
+    desktopLabel.textContent = `Open LINE (@${product.contact_handle})`;
+    mobileLabel.textContent = `Open LINE`;
+    const openLine = () => window.open(lineUrl, '_blank');
+    desktopBtn.onclick = openLine;
+    mobileBtn.onclick = openLine;
+  } else if (product.contact_method === 'telegram' && product.contact_handle) {
+    const tgUrl = `https://t.me/${product.contact_handle.replace('@', '')}`;
+    desktopLabel.textContent = `Telegram (${product.contact_handle})`;
+    mobileLabel.textContent = `Telegram`;
+    const openTg = () => window.open(tgUrl, '_blank');
+    desktopBtn.onclick = openTg;
+    mobileBtn.onclick = openTg;
+  } else {
+    // Default: Open in-app message modal
+    desktopBtn.onclick = openContactModal;
+    mobileBtn.onclick = openContactModal;
   }
 }
 
-async function setupDetailActions(product) {
-  const favBtn = document.getElementById('btnFavoriteDetail');
-  const contactBtn = document.getElementById('btnContactSeller');
+// Setup Favorite Toggling Hooks
+function setupFavoriteHooks() {
+  const desktopBtn = document.getElementById('btnFavoriteDetail');
+  const mobileBtn = document.getElementById('btnMobileFav');
 
-  const { data: { user } } = await window.supabase.auth.getUser();
+  const handleFavoriteClick = async () => {
+    if (!currentStudentUser) {
+      alert('Please sign in to save items to your favorites.');
+      window.location.href = 'login.html';
+      return;
+    }
 
-  // Contact Method Routing
-  if (product.contact_method === 'line' && product.contact_handle) {
-    contactBtn.href = `https://line.me/ti/p/~${product.contact_handle}`;
-    contactBtn.textContent = `💬 Open LINE (@${product.contact_handle})`;
-    contactBtn.target = '_blank';
-  } else if (product.contact_method === 'telegram' && product.contact_handle) {
-    contactBtn.href = `https://t.me/${product.contact_handle.replace('@', '')}`;
-    contactBtn.textContent = `✈️ Open Telegram (${product.contact_handle})`;
-    contactBtn.target = '_blank';
-  } else {
-    contactBtn.href = `messages.html?seller=${product.seller_id}&product=${product.id}`;
-  }
-
-  if (!user) return;
-
-  // Check if current student previously favorited this item
-  const { data: existingFav } = await window.supabase
-    .from('favorites')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('product_id', product.id)
-    .maybeSingle();
-
-  if (existingFav) {
-    favBtn.classList.add('active');
-    favBtn.textContent = '💖 Favorited';
-  }
-
-  // Toggle favorite on click
-  favBtn.addEventListener('click', async () => {
-    const isFav = favBtn.classList.contains('active');
+    isProductFavorited = !isProductFavorited;
+    updateFavoriteUI();
 
     try {
-      if (!isFav) {
+      if (isProductFavorited) {
         await window.supabase
           .from('favorites')
-          .insert([{ user_id: user.id, product_id: product.id }]);
-        favBtn.classList.add('active');
-        favBtn.textContent = '💖 Favorited';
+          .insert([{ user_id: currentStudentUser.id, product_id: currentProduct.id }]);
+        showToast('Saved to your campus favorites!', 'favorite');
       } else {
         await window.supabase
           .from('favorites')
           .delete()
-          .eq('user_id', user.id)
-          .eq('product_id', product.id);
-        favBtn.classList.remove('active');
-        favBtn.textContent = '❤️ Add to Favorites';
+          .eq('user_id', currentStudentUser.id)
+          .eq('product_id', currentProduct.id);
+        showToast('Removed from favorites.', 'heart_broken');
       }
     } catch (err) {
       console.error('Failed to toggle favorite:', err);
+      // Rollback UI
+      isProductFavorited = !isProductFavorited;
+      updateFavoriteUI();
+    }
+  };
+
+  if (desktopBtn) desktopBtn.addEventListener('click', handleFavoriteClick);
+  if (mobileBtn) mobileBtn.addEventListener('click', handleFavoriteClick);
+}
+
+// Update Favorite Visual State across Desktop and Mobile
+function updateFavoriteUI() {
+  const favIcon = document.getElementById('favIcon');
+  const favLabel = document.getElementById('favLabel');
+  const mobileFavIcon = document.getElementById('mobileFavIcon');
+  const mobileBtn = document.getElementById('btnMobileFav');
+
+  if (isProductFavorited) {
+    favIcon.classList.add('text-tertiary', 'fill-1');
+    favLabel.textContent = 'Favorited';
+    mobileFavIcon.classList.add('text-tertiary', 'fill-1');
+    mobileBtn.classList.add('text-tertiary');
+  } else {
+    favIcon.classList.remove('text-tertiary', 'fill-1');
+    favLabel.textContent = 'Add to Favorites';
+    mobileFavIcon.classList.remove('text-tertiary', 'fill-1');
+    mobileBtn.classList.remove('text-tertiary');
+  }
+}
+
+// Modal open/close actions
+function openContactModal() {
+  if (!currentStudentUser) {
+    alert('Please sign in to contact sellers.');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // Prevent messaging oneself
+  if (currentProduct.seller_id === currentStudentUser.id) {
+    alert('This is your own listing.');
+    return;
+  }
+
+  const modal = document.getElementById('contactModal');
+  const title = document.getElementById('modalProductTitle');
+  const price = document.getElementById('modalProductPrice');
+  const img = document.getElementById('modalProductImg');
+  const messageInput = document.getElementById('contactMessage');
+  const sellerTitle = document.getElementById('modalSellerTitle');
+
+  title.textContent = currentProduct.title;
+  price.textContent = `฿${Number(currentProduct.price || 0).toLocaleString()}`;
+  img.src = currentProduct.image_front_url || 'https://via.placeholder.com/150?text=Item';
+  sellerTitle.textContent = `Message ${currentSeller?.full_name || 'Seller'}`;
+
+  messageInput.value = `Hi ${currentSeller?.full_name ? currentSeller.full_name.split(' ')[0] : 'there'}, I'm interested in your ${currentProduct.title}. Is it still available for meetup?`;
+
+  modal.classList.add('active');
+}
+
+function closeContactModal() {
+  document.getElementById('contactModal').classList.remove('active');
+}
+
+function setupModalDismissals() {
+  document.getElementById('closeModalBtn')?.addEventListener('click', closeContactModal);
+  document.getElementById('cancelModalBtn')?.addEventListener('click', closeContactModal);
+  
+  const modal = document.getElementById('contactModal');
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) closeContactModal();
+  });
+
+  // ESC Key listener
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeContactModal();
     }
   });
+}
+
+// Handle In-App Conversation Submission
+function setupContactHooks() {
+  const sendBtn = document.getElementById('sendMessageBtn');
+
+  sendBtn?.addEventListener('click', async () => {
+    const text = document.getElementById('contactMessage').value.trim();
+    if (!text) return;
+
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-base">progress_activity</span> Sending...';
+
+    try {
+      // 1. Fetch or create conversation
+      const { data: existingConvo } = await window.supabase
+        .from('conversations')
+        .select('id')
+        .eq('buyer_id', currentStudentUser.id)
+        .eq('seller_id', currentProduct.seller_id)
+        .eq('product_id', currentProduct.id)
+        .maybeSingle();
+
+      let convoId = existingConvo?.id;
+
+      if (!convoId) {
+        const { data: newConvo, error: convoErr } = await window.supabase
+          .from('conversations')
+          .insert([{
+            buyer_id: currentStudentUser.id,
+            seller_id: currentProduct.seller_id,
+            product_id: currentProduct.id,
+            last_message: text,
+            last_message_at: new Date().toISOString()
+          }])
+          .select()
+          .single();
+
+        if (convoErr) throw convoErr;
+        convoId = newConvo.id;
+      }
+
+      // 2. Insert Message Record
+      const { error: msgErr } = await window.supabase
+        .from('messages')
+        .insert([{
+          conversation_id: convoId,
+          sender_id: currentStudentUser.id,
+          content: text
+        }]);
+
+      if (msgErr) throw msgErr;
+
+      // 3. Update Conversation Timestamp
+      await window.supabase
+        .from('conversations')
+        .update({
+          last_message: text,
+          last_message_at: new Date().toISOString()
+        })
+        .eq('id', convoId);
+
+      closeContactModal();
+      showToast('Message sent! Redirecting to chat...', 'send');
+
+      setTimeout(() => {
+        window.location.href = `messages.html?seller=${currentProduct.seller_id}&product=${currentProduct.id}`;
+      }, 1000);
+    } catch (err) {
+      console.error('Error sending message:', err);
+      alert('Could not send message: ' + err.message);
+      sendBtn.disabled = false;
+      sendBtn.innerHTML = '<span class="material-symbols-outlined text-base">send</span><span>Send Message</span>';
+    }
+  });
+}
+
+// Toast notification helper
+function showToast(message, iconName = 'check_circle') {
+  const toast = document.getElementById('toastNotification');
+  const toastText = document.getElementById('toastText');
+  const toastIcon = document.getElementById('toastIcon');
+
+  toastText.textContent = message;
+  toastIcon.textContent = iconName;
+
+  toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+  setTimeout(() => {
+    toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+  }, 2500);
 }
