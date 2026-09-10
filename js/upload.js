@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupConditionToggle();
   setupPaymentToggle();
   setupContactToggle();
+  setupDeselectableRadios();
   setupLightboxListeners();
   setupFormSubmission();
 });
@@ -89,6 +90,70 @@ function setupSlotHandlers(slotId, inputId, previewId, labelId, actionsId) {
     preview.classList.add('hidden');
     actions.classList.add('hidden');
     label.classList.remove('hidden');
+  });
+}
+
+// Toggle and Deselection logic for all option groups
+function setupDeselectableRadios() {
+  const groupNames = ['productGender', 'productSize', 'productCondition', 'paymentMethod', 'contactMethod'];
+
+  groupNames.forEach((name) => {
+    const radios = document.querySelectorAll(`input[name="${name}"]`);
+    radios.forEach((radio) => {
+      radio.addEventListener('click', function () {
+        if (this.dataset.wasChecked === 'true') {
+          this.checked = false;
+          this.dataset.wasChecked = 'false';
+
+          // Trigger custom field hiding if condition/payment were cleared
+          if (name === 'productCondition') {
+            document.getElementById('customConditionInput')?.classList.add('hidden');
+          }
+          if (name === 'paymentMethod') {
+            document.getElementById('customPaymentInput')?.classList.add('hidden');
+          }
+          if (name === 'contactMethod') {
+            const handleInput = document.getElementById('contactHandleInput');
+            if (handleInput) {
+              handleInput.value = '';
+              handleInput.placeholder = 'Select LINE or Telegram above to enter username';
+            }
+          }
+        } else {
+          radios.forEach(r => r.dataset.wasChecked = 'false');
+          this.dataset.wasChecked = 'true';
+        }
+      });
+    });
+  });
+
+  // Clicking on blank space inside an option container deselects the current choice
+  document.querySelectorAll('.toggle-group-container').forEach((container) => {
+    container.addEventListener('click', (e) => {
+      // If clicking directly on the container padding/empty area, not on an option label or input
+      if (!e.target.closest('.btn-toggle-option') && !e.target.closest('input')) {
+        const group = container.getAttribute('data-group');
+        const radios = container.querySelectorAll(`input[name="${group}"]`);
+        radios.forEach((r) => {
+          r.checked = false;
+          r.dataset.wasChecked = 'false';
+        });
+
+        if (group === 'productCondition') {
+          document.getElementById('customConditionInput')?.classList.add('hidden');
+        }
+        if (group === 'paymentMethod') {
+          document.getElementById('customPaymentInput')?.classList.add('hidden');
+        }
+        if (group === 'contactMethod') {
+          const handleInput = document.getElementById('contactHandleInput');
+          if (handleInput) {
+            handleInput.value = '';
+            handleInput.placeholder = 'Select LINE or Telegram above to enter username';
+          }
+        }
+      }
+    });
   });
 }
 
@@ -164,14 +229,14 @@ function setupPaymentToggle() {
   });
 }
 
-// Contact Toggle (LINE vs Telegram placeholder routing)
+// Contact Toggle
 function setupContactToggle() {
   const handleInput = document.getElementById('contactHandleInput');
   document.querySelectorAll('input[name="contactMethod"]').forEach(radio => {
     radio.addEventListener('change', () => {
       if (radio.value === 'line') {
         handleInput.placeholder = 'Enter your LINE ID';
-      } else {
+      } else if (radio.value === 'telegram') {
         handleInput.placeholder = 'Enter your Telegram @username';
       }
       handleInput.focus();
@@ -210,6 +275,31 @@ function setupFormSubmission() {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
+    // Required checks for radio selections
+    const selectedConditionRadio = document.querySelector('input[name="productCondition"]:checked');
+    if (!selectedConditionRadio) {
+      alert('Please select the item condition (New, Like New, Used, or Other).');
+      return;
+    }
+
+    const selectedPaymentRadio = document.querySelector('input[name="paymentMethod"]:checked');
+    if (!selectedPaymentRadio) {
+      alert('Please select an accepted payment method.');
+      return;
+    }
+
+    const selectedContactRadio = document.querySelector('input[name="contactMethod"]:checked');
+    if (!selectedContactRadio) {
+      alert('Please select your preferred contact channel (LINE or Telegram).');
+      return;
+    }
+
+    const contactHandle = document.getElementById('contactHandleInput').value.trim();
+    if (!contactHandle) {
+      alert('Please enter your contact handle/ID.');
+      return;
+    }
+
     const title = document.getElementById('productName').value.trim();
     const price = parseFloat(document.getElementById('productPrice').value);
     const isNegotiable = document.getElementById('isNegotiable')?.checked || false;
@@ -227,25 +317,24 @@ function setupFormSubmission() {
       categoryLabel = selectElem.options[selectElem.selectedIndex].text;
     }
 
-    // Gender & Size
+    // Gender & Size (Default to Free Size / Unisex if user left unselected)
     const selectedGender = document.querySelector('input[name="productGender"]:checked')?.value || 'unisex';
     const selectedSize = document.querySelector('input[name="productSize"]:checked')?.value || 'Free Size';
 
     // Condition
-    let condition = document.querySelector('input[name="productCondition"]:checked')?.value || 'used';
+    let condition = selectedConditionRadio.value;
     if (condition === 'other') {
       condition = document.getElementById('customConditionInput').value.trim() || 'Other';
     }
 
     // Payment
-    let paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'qr';
+    let paymentMethod = selectedPaymentRadio.value;
     if (paymentMethod === 'other') {
       paymentMethod = document.getElementById('customPaymentInput').value.trim() || 'Other';
     }
 
     // Contact
-    const contactMethod = document.querySelector('input[name="contactMethod"]:checked')?.value || 'line';
-    const contactHandle = document.getElementById('contactHandleInput').value.trim();
+    const contactMethod = selectedContactRadio.value;
 
     // Verify Front Photo
     const frontPreview = document.getElementById('preview-front');

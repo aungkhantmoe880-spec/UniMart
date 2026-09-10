@@ -53,7 +53,7 @@
 
 <body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col">
 
-  <!-- Desktop Header (Full Width matching Marketplace & Inventory) -->
+  <!-- Desktop Header -->
   <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-surface-container shadow-[0_1px_8px_rgba(0,97,148,0.05)] pt-safe">
     <div class="h-16 max-w-[1500px] w-full mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3 shrink-0">
@@ -101,7 +101,7 @@
 
         <form id="uploadForm" class="p-6 md:p-8 flex flex-col gap-6">
 
-          <!-- 1. Photo Upload Grid (4 Angles) -->
+          <!-- 1. Photo Upload Grid -->
           <div>
             <div class="flex items-baseline justify-between mb-2">
               <div>
@@ -112,8 +112,7 @@
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              
-              <!-- Slot 1: Front View (Required) -->
+              <!-- Slot 1: Front View -->
               <div class="relative flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container-low border border-dashed border-outline-variant hover:border-primary transition-all min-h-[120px] text-center" id="slot-front">
                 <input type="file" id="imgFront" accept="image/*" class="sr-only" required />
                 <label for="imgFront" id="label-front" class="flex flex-col items-center cursor-pointer pointer-events-auto w-full h-full justify-center">
@@ -123,9 +122,7 @@
                   <span class="text-xs font-bold text-on-surface">Front View</span>
                   <span class="text-[10px] text-primary font-semibold mt-0.5">Primary Angle</span>
                 </label>
-                
                 <img id="preview-front" alt="Front Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-xl" />
-                
                 <div id="actions-front" class="hidden absolute top-2 right-2 flex items-center gap-1 z-10">
                   <button type="button" class="btn-slot-view w-6 h-6 rounded-full bg-surface-container-lowest/90 text-on-surface flex items-center justify-center shadow hover:text-primary transition-colors" title="View Full Photo">
                     <span class="material-symbols-outlined text-xs">visibility</span>
@@ -146,9 +143,7 @@
                   <span class="text-xs font-bold text-on-surface">Back View</span>
                   <span class="text-[10px] text-on-surface-variant font-medium mt-0.5">Ports / Cover</span>
                 </label>
-                
                 <img id="preview-back" alt="Back Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-xl" />
-                
                 <div id="actions-back" class="hidden absolute top-2 right-2 flex items-center gap-1 z-10">
                   <button type="button" class="btn-slot-view w-6 h-6 rounded-full bg-surface-container-lowest/90 text-on-surface flex items-center justify-center shadow hover:text-primary transition-colors" title="View Full Photo">
                     <span class="material-symbols-outlined text-xs">visibility</span>
@@ -169,9 +164,7 @@
                   <span class="text-xs font-bold text-on-surface">Left Side</span>
                   <span class="text-[10px] text-on-surface-variant font-medium mt-0.5">Profile Edge</span>
                 </label>
-                
                 <img id="preview-left" alt="Left Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-xl" />
-                
                 <div id="actions-left" class="hidden absolute top-2 right-2 flex items-center gap-1 z-10">
                   <button type="button" class="btn-slot-view w-6 h-6 rounded-full bg-surface-container-lowest/90 text-on-surface flex items-center justify-center shadow hover:text-primary transition-colors" title="View Full Photo">
                     <span class="material-symbols-outlined text-xs">visibility</span>
@@ -192,9 +185,7 @@
                   <span class="text-xs font-bold text-on-surface">Right Side</span>
                   <span class="text-[10px] text-on-surface-variant font-medium mt-0.5">Finish & Wear</span>
                 </label>
-                
                 <img id="preview-right" alt="Right Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-xl" />
-                
                 <div id="actions-right" class="hidden absolute top-2 right-2 flex items-center gap-1 z-10">
                   <button type="button" class="btn-slot-view w-6 h-6 rounded-full bg-surface-container-lowest/90 text-on-surface flex items-center justify-center shadow hover:text-primary transition-colors" title="View Full Photo">
                     <span class="material-symbols-outlined text-xs">visibility</span>
@@ -204,7 +195,6 @@
                   </button>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -258,96 +248,95 @@
             </div>
           </div>
 
-          <!-- 4. Target / Gender -->
-          <div>
+          <!-- 4. Target / Gender (Unselected by default, deep-blue when checked) -->
+          <div class="toggle-group-container" data-group="productGender">
             <label class="block text-xs font-bold text-on-surface mb-1.5">
               Gender / Style <span class="text-outline font-normal">(Optional)</span>
             </label>
             <div class="grid grid-cols-3 gap-2 sm:w-2/3">
-              <label class="flex items-center justify-center p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed font-semibold text-xs text-center">
-                <input type="radio" name="productGender" value="unisex" class="sr-only" checked />
+              <label class="btn-toggle-option flex items-center justify-center p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all font-semibold text-xs text-center has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
+                <input type="radio" name="productGender" value="unisex" class="sr-only" />
                 <span>Unisex 🚻</span>
               </label>
-              <label class="flex items-center justify-center p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed font-semibold text-xs text-center">
+              <label class="btn-toggle-option flex items-center justify-center p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all font-semibold text-xs text-center has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="productGender" value="male" class="sr-only" />
                 <span>Male 🚹</span>
               </label>
-              <label class="flex items-center justify-center p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed font-semibold text-xs text-center">
+              <label class="btn-toggle-option flex items-center justify-center p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all font-semibold text-xs text-center has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="productGender" value="female" class="sr-only" />
                 <span>Female 🚺</span>
               </label>
             </div>
           </div>
 
-          <!-- 5. Size Selection (Includes Free Size) -->
-          <div>
+          <!-- 5. Size Selection (Unselected by default, deep-blue when checked) -->
+          <div class="toggle-group-container" data-group="productSize">
             <div class="flex items-center justify-between mb-1.5">
               <label class="text-xs font-bold text-on-surface">
-                Size <span class="text-outline font-normal">(Apparel, fit, or dimensions)</span>
+                Size <span class="text-outline font-normal">(Optional)</span>
               </label>
-              <span class="text-[11px] text-outline">Default: Free Size / Standard</span>
             </div>
             <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
-              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
+              <label class="btn-toggle-option flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all font-semibold text-xs text-center has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="productSize" value="S" class="sr-only" />
                 <span>S</span>
               </label>
-              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
+              <label class="btn-toggle-option flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all font-semibold text-xs text-center has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="productSize" value="M" class="sr-only" />
                 <span>M</span>
               </label>
-              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
+              <label class="btn-toggle-option flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all font-semibold text-xs text-center has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="productSize" value="L" class="sr-only" />
                 <span>L</span>
               </label>
-              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
+              <label class="btn-toggle-option flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all font-semibold text-xs text-center has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="productSize" value="XL" class="sr-only" />
                 <span>XL</span>
               </label>
-              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
+              <label class="btn-toggle-option flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all font-semibold text-xs text-center has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="productSize" value="XXL" class="sr-only" />
                 <span>XXL</span>
               </label>
-              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
-                <input type="radio" name="productSize" value="Free Size" class="sr-only" checked />
+              <label class="btn-toggle-option flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all font-semibold text-xs text-center has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
+                <input type="radio" name="productSize" value="Free Size" class="sr-only" />
                 <span>Free Size</span>
               </label>
             </div>
           </div>
 
-          <!-- 6. Condition -->
-          <div>
+          <!-- 6. Condition (Unselected by default, deep-blue when checked) -->
+          <div class="toggle-group-container" data-group="productCondition">
             <label class="block text-xs font-bold text-on-surface mb-1.5">
               Condition <span class="text-tertiary">*</span>
             </label>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex flex-col items-start">
-                <input type="radio" name="productCondition" value="new" class="sr-only" checked />
+              <label class="btn-toggle-option p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all flex flex-col items-start has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
+                <input type="radio" name="productCondition" value="new" class="sr-only" />
                 <div class="flex items-center gap-1 font-bold text-sm mb-0.5">
                   <span>New</span> <span>🆕</span>
                 </div>
-                <span class="text-[10px] opacity-75">Unopened / Boxed</span>
+                <span class="text-[10px] opacity-80">Unopened / Boxed</span>
               </label>
-              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex flex-col items-start">
+              <label class="btn-toggle-option p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all flex flex-col items-start has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="productCondition" value="like-new" class="sr-only" />
                 <div class="flex items-center gap-1 font-bold text-sm mb-0.5">
                   <span>Like New</span> <span>✨</span>
                 </div>
-                <span class="text-[10px] opacity-75">Barely used, 0 flaws</span>
+                <span class="text-[10px] opacity-80">Barely used, 0 flaws</span>
               </label>
-              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex flex-col items-start">
+              <label class="btn-toggle-option p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all flex flex-col items-start has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="productCondition" value="used" class="sr-only" />
                 <div class="flex items-center gap-1 font-bold text-sm mb-0.5">
                   <span>Used</span> <span>📦</span>
                 </div>
-                <span class="text-[10px] opacity-75">Normal campus wear</span>
+                <span class="text-[10px] opacity-80">Normal campus wear</span>
               </label>
-              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex flex-col items-start">
+              <label class="btn-toggle-option p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all flex flex-col items-start has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="productCondition" value="other" id="conditionOtherRadio" class="sr-only" />
                 <div class="flex items-center gap-1 font-bold text-sm mb-0.5">
                   <span>Other</span> <span>✍️</span>
                 </div>
-                <span class="text-[10px] opacity-75">Custom description</span>
+                <span class="text-[10px] opacity-80">Custom description</span>
               </label>
             </div>
             <input type="text" id="customConditionInput" class="hidden mt-2 w-full h-11 px-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" placeholder="Describe condition (e.g. Minor scratch on edge)" />
@@ -374,34 +363,34 @@
               <input type="text" id="productLocation" class="w-full h-11 pl-10 pr-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container placeholder:text-outline outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" placeholder="e.g. Dorm Hall B, Main Library 1st Floor, Engineering Canteen" required />
             </div>
             <div class="flex flex-wrap gap-1.5 mt-2">
-              <button type="button" class="quick-loc-btn px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium hover:bg-primary-fixed hover:text-on-primary-fixed transition-colors" data-loc="Main Library Floor 1">📍 Main Library</button>
-              <button type="button" class="quick-loc-btn px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium hover:bg-primary-fixed hover:text-on-primary-fixed transition-colors" data-loc="Dorm Hall B Lobby">📍 Dorm Hall B</button>
-              <button type="button" class="quick-loc-btn px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium hover:bg-primary-fixed hover:text-on-primary-fixed transition-colors" data-loc="Student Union Hub">📍 Student Union</button>
+              <button type="button" class="quick-loc-btn px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium hover:bg-primary hover:text-on-primary transition-colors" data-loc="Main Library Floor 1">📍 Main Library</button>
+              <button type="button" class="quick-loc-btn px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium hover:bg-primary hover:text-on-primary transition-colors" data-loc="Dorm Hall B Lobby">📍 Dorm Hall B</button>
+              <button type="button" class="quick-loc-btn px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium hover:bg-primary hover:text-on-primary transition-colors" data-loc="Student Union Hub">📍 Student Union</button>
             </div>
           </div>
 
-          <!-- 9. Payment Methods -->
-          <div>
+          <!-- 9. Payment Methods (Unselected by default, deep-blue when checked) -->
+          <div class="toggle-group-container" data-group="paymentMethod">
             <label class="block text-xs font-bold text-on-surface mb-1.5">
               Accepted Payment Method <span class="text-tertiary">*</span>
             </label>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <label class="p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center gap-2">
-                <input type="radio" name="paymentMethod" value="qr" class="sr-only" checked />
+              <label class="btn-toggle-option p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all flex items-center gap-2 has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
+                <input type="radio" name="paymentMethod" value="qr" class="sr-only" />
                 <span>🧮</span>
                 <span class="text-xs font-bold">PromptPay / QR</span>
               </label>
-              <label class="p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center gap-2">
+              <label class="btn-toggle-option p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all flex items-center gap-2 has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="paymentMethod" value="transfer" class="sr-only" />
                 <span>🏦</span>
                 <span class="text-xs font-bold">Bank Transfer</span>
               </label>
-              <label class="p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center gap-2">
+              <label class="btn-toggle-option p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all flex items-center gap-2 has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="paymentMethod" value="cash" class="sr-only" />
                 <span>💵</span>
                 <span class="text-xs font-bold">Cash Meetup</span>
               </label>
-              <label class="p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center gap-2">
+              <label class="btn-toggle-option p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all flex items-center gap-2 has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="paymentMethod" value="other" id="paymentOtherRadio" class="sr-only" />
                 <span>✨</span>
                 <span class="text-xs font-bold">Other Method</span>
@@ -410,18 +399,18 @@
             <input type="text" id="customPaymentInput" class="hidden mt-2 w-full h-11 px-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" placeholder="Specify payment method (e.g. TrueMoney Wallet)" />
           </div>
 
-          <!-- 10. Preferred Contact Method (External Messengers Only) -->
-          <div>
+          <!-- 10. Preferred Contact Method (Unselected by default, deep-blue when checked) -->
+          <div class="toggle-group-container" data-group="contactMethod">
             <label class="block text-xs font-bold text-on-surface mb-1.5">
               Preferred Contact Channel <span class="text-tertiary">*</span>
             </label>
             <div class="grid grid-cols-2 gap-2 sm:w-2/3">
-              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center justify-center gap-2 font-bold text-xs">
-                <input type="radio" name="contactMethod" value="line" class="sr-only" checked />
+              <label class="btn-toggle-option p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all flex items-center justify-center gap-2 font-bold text-xs has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
+                <input type="radio" name="contactMethod" value="line" class="sr-only" />
                 <span>🟢</span>
                 <span>LINE ID</span>
               </label>
-              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center justify-center gap-2 font-bold text-xs">
+              <label class="btn-toggle-option p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all flex items-center justify-center gap-2 font-bold text-xs has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:checked]:shadow-sm">
                 <input type="radio" name="contactMethod" value="telegram" class="sr-only" />
                 <span>✈️</span>
                 <span>Telegram</span>
@@ -429,7 +418,7 @@
             </div>
             
             <div class="mt-2">
-              <input type="text" id="contactHandleInput" class="w-full h-11 px-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" placeholder="Enter your LINE ID" required />
+              <input type="text" id="contactHandleInput" class="w-full h-11 px-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" placeholder="Select LINE or Telegram above to enter username" required />
             </div>
           </div>
 
