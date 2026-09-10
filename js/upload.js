@@ -1,17 +1,24 @@
 let pendingListingPayload = null;
+let editProductId = null;
+let existingImageUrls = {
+  front: null,
+  back: null,
+  left: null,
+  right: null
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Load avatar in navbar
+  // Check session and load avatar
   const { data: { user } } = await window.supabase.auth.getUser();
   if (user) {
     loadNavbarAvatar(user.id);
   }
 
   // Setup file slots
-  setupSlotHandlers('slot-front', 'imgFront', 'preview-front', 'label-front', 'actions-front');
-  setupSlotHandlers('slot-back', 'imgBack', 'preview-back', 'label-back', 'actions-back');
-  setupSlotHandlers('slot-left', 'imgLeftSide', 'preview-left', 'label-left', 'actions-left');
-  setupSlotHandlers('slot-right', 'imgRightSide', 'preview-right', 'label-right', 'actions-right');
+  setupSlotHandlers('slot-front', 'imgFront', 'preview-front', 'label-front', 'actions-front', 'front');
+  setupSlotHandlers('slot-back', 'imgBack', 'preview-back', 'label-back', 'actions-back', 'back');
+  setupSlotHandlers('slot-left', 'imgLeftSide', 'preview-left', 'label-left', 'actions-left', 'left');
+  setupSlotHandlers('slot-right', 'imgRightSide', 'preview-right', 'label-right', 'actions-right', 'right');
 
   // Input listeners
   setupDescriptionCounter();
@@ -23,6 +30,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupDeselectableRadios();
   setupLightboxListeners();
   setupFormSubmission();
+
+  // Check for edit query param
+  const urlParams = new URLSearchParams(window.location.search);
+  editProductId = urlParams.get('edit');
+
+  if (editProductId) {
+    loadExistingProductForEdit(editProductId);
+  }
 });
 
 // Load logged-in student avatar in top bar
@@ -45,8 +60,159 @@ async function loadNavbarAvatar(userId) {
   }
 }
 
+// Pre-fill form if editing an existing listing
+async function loadExistingProductForEdit(productId) {
+  try {
+    const { data: p, error } = await window.supabase
+      .from('products')
+      .select('*')
+      .eq('id', productId)
+      .single();
+
+    if (error || !p) {
+      alert('Could not retrieve product for editing.');
+      return;
+    }
+
+    // Update Header Text for Edit Mode
+    const headerTitle = document.querySelector('h1');
+    const publishBtnSpan = document.querySelector('#btnSubmitForm span:last-child');
+    if (headerTitle) headerTitle.textContent = 'Edit Your Product';
+    if (publishBtnSpan) publishBtnSpan.textContent = 'Republish Changes';
+
+    // 1. Text Inputs
+    document.getElementById('productName').value = p.title || '';
+    document.getElementById('productPrice').value = p.price || 0;
+    document.getElementById('productLocation').value = p.location || '';
+    document.getElementById('productDescription').value = p.description || '';
+    document.getElementById('isNegotiable').checked = Boolean(p.is_negotiable);
+
+    // Update description counter
+    const counter = document.getElementById('charCounter');
+    if (counter) counter.textContent = `${(p.description || '').length} / 800`;
+
+    // 2. Category
+    const catSelect = document.getElementById('productCategory');
+    const customCat = document.getElementById('customCategoryInput');
+    const standardCategories = ['clothing', 'electronics', 'books', 'dorm'];
+
+    if (standardCategories.includes(p.category)) {
+      catSelect.value = p.category;
+    } else if (p.category) {
+      catSelect.value = 'other';
+      customCat.classList.remove('hidden');
+      customCat.value = p.category;
+    }
+
+    // 3. Gender
+    if (p.gender) {
+      const gRadio = document.querySelector(`input[name="productGender"][value="${p.gender.toLowerCase()}"]`);
+      if (gRadio) {
+        gRadio.checked = true;
+        gRadio.dataset.wasChecked = 'true';
+      }
+    }
+
+    // 4. Size
+    if (p.size) {
+      const sRadio = document.querySelector(`input[name="productSize"][value="${p.size}"]`);
+      if (sRadio) {
+        sRadio.checked = true;
+        sRadio.dataset.wasChecked = 'true';
+      }
+    }
+
+    // 5. Condition
+    const standardConditions = ['new', 'like-new', 'used'];
+    if (standardConditions.includes(p.condition)) {
+      const cRadio = document.querySelector(`input[name="productCondition"][value="${p.condition}"]`);
+      if (cRadio) {
+        cRadio.checked = true;
+        cRadio.dataset.wasChecked = 'true';
+      }
+    } else if (p.condition) {
+      const otherRadio = document.getElementById('conditionOtherRadio');
+      const customCond = document.getElementById('customConditionInput');
+      if (otherRadio) {
+        otherRadio.checked = true;
+        otherRadio.dataset.wasChecked = 'true';
+      }
+      if (customCond) {
+        customCond.classList.remove('hidden');
+        customCond.value = p.condition;
+      }
+    }
+
+    // 6. Payment
+    const standardPayments = ['qr', 'transfer', 'cash'];
+    if (standardPayments.includes(p.payment_method)) {
+      const payRadio = document.querySelector(`input[name="paymentMethod"][value="${p.payment_method}"]`);
+      if (payRadio) {
+        payRadio.checked = true;
+        payRadio.dataset.wasChecked = 'true';
+      }
+    } else if (p.payment_method) {
+      const otherPayRadio = document.getElementById('paymentOtherRadio');
+      const customPay = document.getElementById('customPaymentInput');
+      if (otherPayRadio) {
+        otherPayRadio.checked = true;
+        otherPayRadio.dataset.wasChecked = 'true';
+      }
+      if (customPay) {
+        customPay.classList.remove('hidden');
+        customPay.value = p.payment_method;
+      }
+    }
+
+    // 7. Contact
+    if (p.contact_method) {
+      const contRadio = document.querySelector(`input[name="contactMethod"][value="${p.contact_method}"]`);
+      if (contRadio) {
+        contRadio.checked = true;
+        contRadio.dataset.wasChecked = 'true';
+      }
+    }
+    const handleInput = document.getElementById('contactHandleInput');
+    if (handleInput) {
+      handleInput.value = p.contact_handle || '';
+      handleInput.placeholder = p.contact_method === 'telegram' ? 'Enter your Telegram @username' : 'Enter your LINE ID';
+    }
+
+    // 8. Pre-fill Image Slots
+    populateImageSlotPreview('front', p.image_front_url);
+    populateImageSlotPreview('back', p.image_back_url);
+    populateImageSlotPreview('left', p.image_left_url);
+    populateImageSlotPreview('right', p.image_right_url);
+
+    // Make front image not strictly required by HTML5 file validator since existing photo is already available
+    if (p.image_front_url) {
+      document.getElementById('imgFront').removeAttribute('required');
+    }
+
+  } catch (err) {
+    console.error('Error prefilling form:', err);
+  }
+}
+
+// Populate slot with existing uploaded URL
+function populateImageSlotPreview(slotKey, url) {
+  if (!url) return;
+  existingImageUrls[slotKey] = url;
+
+  const preview = document.getElementById(`preview-${slotKey}`);
+  const label = document.getElementById(`label-${slotKey}`);
+  const actions = document.getElementById(`actions-${slotKey}`);
+
+  if (preview && label && actions) {
+    preview.src = url;
+    preview.classList.remove('hidden');
+    label.classList.add('hidden');
+    actions.classList.remove('hidden');
+  }
+}
+
 // 4-Slot Photo Handler
-function setupSlotHandlers(slotId, inputId, previewId, labelId, actionsId) {
+function setupSlotHandlers(slotId, inputId, previewId, labelId, actionsId, slotKey) {
   const input = document.getElementById(inputId);
   const preview = document.getElementById(previewId);
   const label = document.getElementById(labelId);
@@ -90,10 +256,15 @@ function setupSlotHandlers(slotId, inputId, previewId, labelId, actionsId) {
     preview.classList.add('hidden');
     actions.classList.add('hidden');
     label.classList.remove('hidden');
+    existingImageUrls[slotKey] = null;
+
+    if (slotKey === 'front') {
+      input.setAttribute('required', 'true');
+    }
   });
 }
 
-// Toggle and Deselection logic for all option groups
+// Toggle & Deselect Logic
 function setupDeselectableRadios() {
   const groupNames = ['productGender', 'productSize', 'productCondition', 'paymentMethod', 'contactMethod'];
 
@@ -105,7 +276,6 @@ function setupDeselectableRadios() {
           this.checked = false;
           this.dataset.wasChecked = 'false';
 
-          // Trigger custom field hiding if condition/payment were cleared
           if (name === 'productCondition') {
             document.getElementById('customConditionInput')?.classList.add('hidden');
           }
@@ -127,10 +297,8 @@ function setupDeselectableRadios() {
     });
   });
 
-  // Clicking on blank space inside an option container deselects the current choice
   document.querySelectorAll('.toggle-group-container').forEach((container) => {
     container.addEventListener('click', (e) => {
-      // If clicking directly on the container padding/empty area, not on an option label or input
       if (!e.target.closest('.btn-toggle-option') && !e.target.closest('input')) {
         const group = container.getAttribute('data-group');
         const radios = container.querySelectorAll(`input[name="${group}"]`);
@@ -168,7 +336,7 @@ function setupDescriptionCounter() {
   }
 }
 
-// Quick Location Tag Fillers
+// Quick Location Fillers
 function setupQuickLocationButtons() {
   const input = document.getElementById('productLocation');
   document.querySelectorAll('.quick-loc-btn').forEach(btn => {
@@ -181,7 +349,7 @@ function setupQuickLocationButtons() {
   });
 }
 
-// Category Custom Input Toggle
+// Category Toggle
 function setupCategoryToggle() {
   const select = document.getElementById('productCategory');
   const customInput = document.getElementById('customCategoryInput');
@@ -197,7 +365,7 @@ function setupCategoryToggle() {
   });
 }
 
-// Condition Custom Input Toggle
+// Condition Toggle
 function setupConditionToggle() {
   const customInput = document.getElementById('customConditionInput');
   document.querySelectorAll('input[name="productCondition"]').forEach(radio => {
@@ -213,7 +381,7 @@ function setupConditionToggle() {
   });
 }
 
-// Payment Custom Input Toggle
+// Payment Toggle
 function setupPaymentToggle() {
   const customInput = document.getElementById('customPaymentInput');
   document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
@@ -263,7 +431,7 @@ function setupLightboxListeners() {
   });
 }
 
-// Form Validation, Modal Review & Supabase Insertion
+// Form Submission: Supports both INSERT (new) and UPDATE (republish)
 function setupFormSubmission() {
   const form = document.getElementById('uploadForm');
   const modal = document.getElementById('previewModal');
@@ -275,7 +443,6 @@ function setupFormSubmission() {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    // Required checks for radio selections
     const selectedConditionRadio = document.querySelector('input[name="productCondition"]:checked');
     if (!selectedConditionRadio) {
       alert('Please select the item condition (New, Like New, Used, or Other).');
@@ -317,7 +484,7 @@ function setupFormSubmission() {
       categoryLabel = selectElem.options[selectElem.selectedIndex].text;
     }
 
-    // Gender & Size (Default to Free Size / Unisex if user left unselected)
+    // Gender & Size
     const selectedGender = document.querySelector('input[name="productGender"]:checked')?.value || 'unisex';
     const selectedSize = document.querySelector('input[name="productSize"]:checked')?.value || 'Free Size';
 
@@ -333,13 +500,12 @@ function setupFormSubmission() {
       paymentMethod = document.getElementById('customPaymentInput').value.trim() || 'Other';
     }
 
-    // Contact
     const contactMethod = selectedContactRadio.value;
 
-    // Verify Front Photo
+    // Verify Front Photo (either newly chosen file or existing URL)
     const frontPreview = document.getElementById('preview-front');
     if (!frontPreview.src || frontPreview.classList.contains('hidden')) {
-      alert('Please upload at least a Front View photo of the product.');
+      alert('Please provide at least a Front View photo for your listing.');
       return;
     }
 
@@ -366,6 +532,11 @@ function setupFormSubmission() {
     document.getElementById('modalPreviewLocation').textContent = `📍 ${location}`;
     document.getElementById('modalPreviewCondition').textContent = condition.toUpperCase();
 
+    // Change preview button text depending on mode
+    if (btnConfirm) {
+      btnConfirm.innerHTML = editProductId ? '<span>Republish Listing</span>' : '<span>Confirm & Publish</span>';
+    }
+
     modal.classList.add('active');
   });
 
@@ -377,12 +548,12 @@ function setupFormSubmission() {
     if (!pendingListingPayload) return;
 
     btnConfirm.disabled = true;
-    btnConfirm.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">progress_activity</span> Publishing...';
+    btnConfirm.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">progress_activity</span> Saving...';
 
     try {
       const { data: { user }, error: authErr } = await window.supabase.auth.getUser();
       if (authErr || !user) {
-        alert('Please log in before listing a product.');
+        alert('Please log in before submitting.');
         window.location.href = 'login.html';
         return;
       }
@@ -392,12 +563,12 @@ function setupFormSubmission() {
       const leftFile = document.getElementById('imgLeftSide').files[0];
       const rightFile = document.getElementById('imgRightSide').files[0];
 
-      // Concurrent Storage Uploads
+      // Upload newly chosen files, or preserve existing URLs
       const [frontUrl, backUrl, leftUrl, rightUrl] = await Promise.all([
-        uploadProductImage(frontFile, 'front'),
-        uploadProductImage(backFile, 'back'),
-        uploadProductImage(leftFile, 'left'),
-        uploadProductImage(rightFile, 'right')
+        frontFile ? uploadProductImage(frontFile, 'front') : Promise.resolve(existingImageUrls.front),
+        backFile ? uploadProductImage(backFile, 'back') : Promise.resolve(existingImageUrls.back),
+        leftFile ? uploadProductImage(leftFile, 'left') : Promise.resolve(existingImageUrls.left),
+        rightFile ? uploadProductImage(rightFile, 'right') : Promise.resolve(existingImageUrls.right)
       ]);
 
       const record = {
@@ -405,20 +576,36 @@ function setupFormSubmission() {
         image_front_url: frontUrl,
         image_back_url: backUrl,
         image_left_url: leftUrl,
-        image_right_url: rightUrl,
-        seller_id: user.id
+        image_right_url: rightUrl
       };
 
-      await insertProductListing(record);
+      if (editProductId) {
+        // UPDATE existing listing in Supabase
+        const { error: updateErr } = await window.supabase
+          .from('products')
+          .update(record)
+          .eq('id', editProductId)
+          .eq('seller_id', user.id);
 
-      modal.classList.remove('active');
-      alert('Product listed successfully in the campus marketplace!');
-      window.location.href = 'marketplace.html';
+        if (updateErr) throw updateErr;
+
+        modal.classList.remove('active');
+        alert('Product listing updated and republished successfully!');
+        window.location.href = 'mylisting.html';
+      } else {
+        // INSERT new listing into Supabase
+        record.seller_id = user.id;
+        await insertProductListing(record);
+
+        modal.classList.remove('active');
+        alert('Product listed successfully in the campus marketplace!');
+        window.location.href = 'marketplace.html';
+      }
     } catch (err) {
-      console.error('Listing creation error:', err);
-      alert(`Publish failed: ${err.message}`);
+      console.error('Submission failed:', err);
+      alert(`Submission failed: ${err.message}`);
       btnConfirm.disabled = false;
-      btnConfirm.textContent = 'Confirm & Publish';
+      btnConfirm.textContent = editProductId ? 'Republish Listing' : 'Confirm & Publish';
     }
   });
 }

@@ -60,24 +60,26 @@ async function initMyListings(userId) {
     return;
   }
 
-  // Modern Responsive Card Template
   container.innerHTML = products.map(p => {
     const isSold = p.status === 'sold';
-    const category = (p.category || 'General').toUpperCase();
+    const condition = (p.condition || 'Good').toUpperCase();
 
     return `
-      <article class="group relative flex flex-col bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container overflow-hidden hover:shadow-md transition-all ${isSold ? 'opacity-80' : ''}" id="listing-${p.id}">
-        <!-- Image & Category Frame -->
-        <div class="relative aspect-[4/3] w-full bg-surface-container-low overflow-hidden">
+      <article class="group relative flex flex-col bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md border border-surface-container overflow-hidden transition-all ${isSold ? 'opacity-80' : ''}" id="listing-${p.id}">
+        
+        <div class="relative aspect-[4/3] w-full bg-surface-container overflow-hidden">
           <img 
             src="${p.image_front_url || 'https://via.placeholder.com/400x300?text=No+Photo'}" 
             alt="${escapeHtml(p.title)}" 
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />
-          <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-surface-container-lowest/90 backdrop-blur-sm text-[10px] font-bold text-primary shadow-xs">
-            ${escapeHtml(category)}
-          </span>
+          
+          <div class="absolute top-2.5 left-2.5 flex gap-1">
+            <span class="px-2 py-0.5 rounded-md bg-surface-container-lowest/90 backdrop-blur-sm text-[10px] font-bold text-primary shadow-xs">
+              ${escapeHtml(condition)}
+            </span>
+          </div>
 
           ${isSold ? `
             <div class="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center">
@@ -86,23 +88,20 @@ async function initMyListings(userId) {
           ` : ''}
         </div>
 
-        <!-- Details -->
-        <div class="p-4 flex flex-col flex-grow justify-between gap-3">
+        <div class="p-3 sm:p-4 flex flex-col flex-grow justify-between gap-3">
           <div class="flex flex-col gap-1">
-            <h4 class="text-sm font-bold text-on-surface line-clamp-1 group-hover:text-primary transition-colors">
+            <span class="text-base sm:text-lg font-bold text-on-surface block leading-tight">
+              ฿${Number(p.price || 0).toLocaleString()}
+            </span>
+            <h2 class="text-xs sm:text-sm text-on-surface line-clamp-1 font-semibold group-hover:text-primary transition-colors mt-0.5">
               ${escapeHtml(p.title)}
-            </h4>
-            <p class="text-xs text-on-surface-variant flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm text-primary">location_on</span>
+            </h2>
+            <div class="flex items-center gap-1 text-on-surface-variant text-[11px] mt-0.5">
+              <span class="material-symbols-outlined text-xs text-primary shrink-0">location_on</span>
               <span class="truncate">${escapeHtml(p.location || 'Campus')}</span>
-            </p>
-            <div class="flex items-baseline gap-2 mt-1">
-              <span class="text-base font-extrabold text-on-surface">฿${Number(p.price || 0).toLocaleString()}</span>
-              ${p.is_negotiable ? '<span class="text-[10px] font-semibold text-secondary">Negotiable</span>' : ''}
             </div>
           </div>
 
-          <!-- Action Toolbar Buttons -->
           <div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-surface-container/60">
             <button 
               type="button" 
@@ -115,14 +114,12 @@ async function initMyListings(userId) {
               <span>${isSold ? 'Relist' : 'Sold'}</span>
             </button>
 
+            <!-- Navigates directly to upload.html in edit mode -->
             <button 
               type="button" 
               class="btn-edit-listing h-8 px-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors" 
               data-id="${p.id}"
-              data-title="${escapeHtml(p.title)}"
-              data-price="${p.price}"
-              data-location="${escapeHtml(p.location || '')}"
-              title="Edit Details"
+              title="Edit in Sell an Item"
             >
               <span class="material-symbols-outlined text-sm">edit</span>
               <span>Edit</span>
@@ -174,70 +171,16 @@ function setupActionHandlers(userId) {
     });
   });
 
-  // 2. Edit Listing Modal Handlers
-  const modal = document.getElementById('editListingModal');
-  const dialog = document.getElementById('editModalDialog');
-  const form = document.getElementById('editListingForm');
-  const cancelBtn = document.getElementById('btnCancelEdit');
-  const cancelBtnX = document.getElementById('btnCancelEditX');
-
-  const openModal = () => {
-    modal.classList.remove('opacity-0', 'pointer-events-none');
-    dialog.classList.remove('scale-95');
-    dialog.classList.add('scale-100');
-  };
-
-  const closeModal = () => {
-    modal.classList.add('opacity-0', 'pointer-events-none');
-    dialog.classList.remove('scale-100');
-    dialog.classList.add('scale-95');
-  };
-
-  if (modal && form) {
-    container.querySelectorAll('.btn-edit-listing').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        document.getElementById('editProductId').value = btn.getAttribute('data-id');
-        document.getElementById('editTitle').value = btn.getAttribute('data-title');
-        document.getElementById('editPrice').value = btn.getAttribute('data-price');
-        document.getElementById('editLocation').value = btn.getAttribute('data-location');
-        openModal();
-      });
+  // 2. Direct Redirect to Sell an Item section with preloaded details
+  container.querySelectorAll('.btn-edit-listing').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const productId = btn.getAttribute('data-id');
+      window.location.href = `upload.html?edit=${productId}`;
     });
+  });
 
-    if (cancelBtn) cancelBtn.onclick = closeModal;
-    if (cancelBtnX) cancelBtnX.onclick = closeModal;
-
-    modal.onclick = (e) => {
-      if (e.target === modal) closeModal();
-    };
-
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('editProductId').value;
-      const updates = {
-        title: document.getElementById('editTitle').value.trim(),
-        price: parseFloat(document.getElementById('editPrice').value),
-        location: document.getElementById('editLocation').value.trim()
-      };
-
-      const { error } = await window.supabase
-        .from('products')
-        .update(updates)
-        .eq('id', id)
-        .eq('seller_id', userId);
-
-      if (error) {
-        alert('Failed to update listing: ' + error.message);
-        return;
-      }
-
-      closeModal();
-      await initMyListings(userId);
-    };
-  }
-
-  // 3. Permanently Delete Product with Storage Cleanup
+  // 3. Delete Listing
   container.querySelectorAll('.btn-delete-listing').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
@@ -249,7 +192,6 @@ function setupActionHandlers(userId) {
       btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>';
 
       try {
-        // Retrieve product photo paths
         const { data: product } = await window.supabase
           .from('products')
           .select('image_front_url, image_back_url, image_left_url, image_right_url')
@@ -275,10 +217,8 @@ function setupActionHandlers(userId) {
           }
         }
 
-        // Delete favorites
         await window.supabase.from('favorites').delete().eq('product_id', productId);
 
-        // Delete product
         const { error: deleteErr } = await window.supabase
           .from('products')
           .delete()
