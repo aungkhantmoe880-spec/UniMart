@@ -1,176 +1,204 @@
-// Manage image preview, delete, and view modal for a slot
-function handleImageSlot(slotId, inputId, previewId, labelId, actionsId) {
-  const slot = document.getElementById(slotId);
+let pendingListingPayload = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // Load avatar in navbar
+  const { data: { user } } = await window.supabase.auth.getUser();
+  if (user) {
+    loadNavbarAvatar(user.id);
+  }
+
+  // Setup file slots
+  setupSlotHandlers('slot-front', 'imgFront', 'preview-front', 'label-front', 'actions-front');
+  setupSlotHandlers('slot-back', 'imgBack', 'preview-back', 'label-back', 'actions-back');
+  setupSlotHandlers('slot-left', 'imgLeftSide', 'preview-left', 'label-left', 'actions-left');
+  setupSlotHandlers('slot-right', 'imgRightSide', 'preview-right', 'label-right', 'actions-right');
+
+  // Input listeners
+  setupDescriptionCounter();
+  setupQuickLocationButtons();
+  setupCategoryToggle();
+  setupConditionToggle();
+  setupPaymentToggle();
+  setupContactToggle();
+  setupLightboxListeners();
+  setupFormSubmission();
+});
+
+// Load logged-in student avatar in top bar
+async function loadNavbarAvatar(userId) {
+  const avatarEl = document.getElementById('navUserAvatar');
+  if (!avatarEl) return;
+
+  try {
+    const { data: profile } = await window.supabase
+      .from('profiles')
+      .select('avatar_url')
+      .eq('id', userId)
+      .single();
+
+    if (profile?.avatar_url && profile.avatar_url.trim() !== '') {
+      avatarEl.src = profile.avatar_url;
+    }
+  } catch (e) {
+    console.warn('Avatar load error:', e);
+  }
+}
+
+// 4-Slot Photo Handler
+function setupSlotHandlers(slotId, inputId, previewId, labelId, actionsId) {
   const input = document.getElementById(inputId);
   const preview = document.getElementById(previewId);
   const label = document.getElementById(labelId);
   const actions = document.getElementById(actionsId);
 
-  if (!slot || !input || !preview || !label || !actions) return;
+  if (!input || !preview || !label || !actions) return;
 
   const btnView = actions.querySelector('.btn-slot-view');
   const btnDelete = actions.querySelector('.btn-slot-delete');
 
-  // 1. File Selection
   input.addEventListener('change', function () {
     const file = this.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = function (e) {
         preview.src = e.target.result;
-        preview.classList.remove('hide');
-        label.classList.add('hide');
-        actions.classList.remove('hide');
-        slot.classList.add('has-image');
+        preview.classList.remove('hidden');
+        label.classList.add('hidden');
+        actions.classList.remove('hidden');
       };
       reader.readAsDataURL(file);
     }
   });
 
-  // 2. View Original Large Image
   btnView?.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (preview.src) {
-      const lightboxModal = document.getElementById('imageLightboxModal');
-      const lightboxImg = document.getElementById('uploadLightboxImg');
-      lightboxImg.src = preview.src;
-      lightboxModal.classList.remove('hide');
+      const modal = document.getElementById('imageLightboxModal');
+      const img = document.getElementById('uploadLightboxImg');
+      img.src = preview.src;
+      modal.classList.add('active');
     }
   });
 
-  // 3. Delete / Clear Image Slot
   btnDelete?.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
     input.value = '';
     preview.src = '';
-    preview.classList.add('hide');
-    actions.classList.add('hide');
-    label.classList.remove('hide');
-    slot.classList.remove('has-image');
+    preview.classList.add('hidden');
+    actions.classList.add('hidden');
+    label.classList.remove('hidden');
   });
 }
 
-// Lightbox listener to close on click or Escape
-function setupUploadLightbox() {
+// Description Character Counter
+function setupDescriptionCounter() {
+  const desc = document.getElementById('productDescription');
+  const counter = document.getElementById('charCounter');
+  if (desc && counter) {
+    desc.addEventListener('input', () => {
+      counter.textContent = `${desc.value.length} / 800`;
+    });
+  }
+}
+
+// Quick Location Tag Fillers
+function setupQuickLocationButtons() {
+  const input = document.getElementById('productLocation');
+  document.querySelectorAll('.quick-loc-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (input) {
+        input.value = btn.getAttribute('data-loc');
+        input.focus();
+      }
+    });
+  });
+}
+
+// Category Custom Input Toggle
+function setupCategoryToggle() {
+  const select = document.getElementById('productCategory');
+  const customInput = document.getElementById('customCategoryInput');
+
+  select?.addEventListener('change', () => {
+    if (select.value === 'other') {
+      customInput.classList.remove('hidden');
+      customInput.focus();
+    } else {
+      customInput.classList.add('hidden');
+      customInput.value = '';
+    }
+  });
+}
+
+// Condition Custom Input Toggle
+function setupConditionToggle() {
+  const customInput = document.getElementById('customConditionInput');
+  document.querySelectorAll('input[name="productCondition"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (radio.value === 'other') {
+        customInput.classList.remove('hidden');
+        customInput.focus();
+      } else {
+        customInput.classList.add('hidden');
+        customInput.value = '';
+      }
+    });
+  });
+}
+
+// Payment Custom Input Toggle
+function setupPaymentToggle() {
+  const customInput = document.getElementById('customPaymentInput');
+  document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (radio.value === 'other') {
+        customInput.classList.remove('hidden');
+        customInput.focus();
+      } else {
+        customInput.classList.add('hidden');
+        customInput.value = '';
+      }
+    });
+  });
+}
+
+// Contact Toggle (LINE vs Telegram placeholder routing)
+function setupContactToggle() {
+  const handleInput = document.getElementById('contactHandleInput');
+  document.querySelectorAll('input[name="contactMethod"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (radio.value === 'line') {
+        handleInput.placeholder = 'Enter your LINE ID';
+      } else {
+        handleInput.placeholder = 'Enter your Telegram @username';
+      }
+      handleInput.focus();
+    });
+  });
+}
+
+// Fullscreen Photo Lightbox Handlers
+function setupLightboxListeners() {
   const modal = document.getElementById('imageLightboxModal');
   const closeBtn = document.getElementById('uploadLightboxClose');
 
-  if (!modal) return;
+  const close = () => modal?.classList.remove('active');
 
-  modal.addEventListener('click', (e) => {
-    if (e.target !== document.getElementById('uploadLightboxImg')) {
-      modal.classList.add('hide');
-    }
-  });
-
-  closeBtn?.addEventListener('click', () => {
-    modal.classList.add('hide');
+  closeBtn?.addEventListener('click', close);
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) close();
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') modal.classList.add('hide');
-  });
-}
-
-// Initialize all slots and form elements on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-  handleImageSlot('slot-front', 'imgFront', 'preview-front', 'label-front', 'actions-front');
-  handleImageSlot('slot-back', 'imgBack', 'preview-back', 'label-back', 'actions-back');
-  handleImageSlot('slot-left', 'imgLeftSide', 'preview-left', 'label-left', 'actions-left');
-  handleImageSlot('slot-right', 'imgRightSide', 'preview-right', 'label-right', 'actions-right');
-
-  setupUploadLightbox();
-  setupCategoryToggle();
-  setupConditionToggle();
-  setupPaymentToggle();
-  setupContactToggle();
-  setupFormSubmission();
-});
-
-// Category "Other" toggle
-function setupCategoryToggle() {
-  const categorySelect = document.getElementById('productCategory');
-  const customCategoryInput = document.getElementById('customCategoryInput');
-
-  if (!categorySelect || !customCategoryInput) return;
-
-  categorySelect.addEventListener('change', function () {
-    if (this.value === 'other') {
-      customCategoryInput.classList.remove('custom-field-hidden');
-      customCategoryInput.focus();
-    } else {
-      customCategoryInput.classList.add('custom-field-hidden');
-      customCategoryInput.value = '';
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+      close();
     }
   });
 }
 
-// Condition "Other" toggle
-function setupConditionToggle() {
-  const conditionRadios = document.querySelectorAll('input[name="productCondition"]');
-  const customConditionInput = document.getElementById('customConditionInput');
-
-  if (!conditionRadios.length || !customConditionInput) return;
-
-  conditionRadios.forEach((radio) => {
-    radio.addEventListener('change', function () {
-      if (this.value === 'other') {
-        customConditionInput.classList.remove('custom-field-hidden');
-        customConditionInput.focus();
-      } else {
-        customConditionInput.classList.add('custom-field-hidden');
-        customConditionInput.value = '';
-      }
-    });
-  });
-}
-
-// Payment "Other" toggle
-function setupPaymentToggle() {
-  const paymentRadios = document.querySelectorAll('input[name="paymentMethod"]');
-  const customPaymentInput = document.getElementById('customPaymentInput');
-
-  if (!paymentRadios.length || !customPaymentInput) return;
-
-  paymentRadios.forEach((radio) => {
-    radio.addEventListener('change', function () {
-      if (this.value === 'other') {
-        customPaymentInput.classList.remove('custom-field-hidden');
-        customPaymentInput.focus();
-      } else {
-        customPaymentInput.classList.add('custom-field-hidden');
-        customPaymentInput.value = '';
-      }
-    });
-  });
-}
-
-// Contact handle toggle
-function setupContactToggle() {
-  const contactRadios = document.querySelectorAll('input[name="contactMethod"]');
-  const contactHandleInput = document.getElementById('contactHandleInput');
-
-  if (!contactRadios.length || !contactHandleInput) return;
-
-  contactRadios.forEach((radio) => {
-    radio.addEventListener('change', function () {
-      if (this.value === 'line' || this.value === 'telegram') {
-        contactHandleInput.classList.remove('custom-field-hidden');
-        contactHandleInput.placeholder = this.value === 'line' 
-          ? 'Enter your LINE ID' 
-          : 'Enter your Telegram @username';
-        contactHandleInput.focus();
-      } else {
-        contactHandleInput.classList.add('custom-field-hidden');
-        contactHandleInput.value = '';
-      }
-    });
-  });
-}
-
-// Data extraction and submission
+// Form Validation, Modal Review & Supabase Insertion
 function setupFormSubmission() {
   const form = document.getElementById('uploadForm');
   const modal = document.getElementById('previewModal');
@@ -179,9 +207,7 @@ function setupFormSubmission() {
 
   if (!form || !modal) return;
 
-  let pendingProductData = null;
-
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const title = document.getElementById('productName').value.trim();
@@ -201,11 +227,9 @@ function setupFormSubmission() {
       categoryLabel = selectElem.options[selectElem.selectedIndex].text;
     }
 
-    // Gender selection (null if unselected)
-    const selectedGender = document.querySelector('input[name="productGender"]:checked')?.value || null;
-
-    // Size selection (null if unselected)
-    const selectedSize = document.querySelector('input[name="productSize"]:checked')?.value || null;
+    // Gender & Size
+    const selectedGender = document.querySelector('input[name="productGender"]:checked')?.value || 'unisex';
+    const selectedSize = document.querySelector('input[name="productSize"]:checked')?.value || 'Free Size';
 
     // Condition
     let condition = document.querySelector('input[name="productCondition"]:checked')?.value || 'used';
@@ -214,71 +238,63 @@ function setupFormSubmission() {
     }
 
     // Payment
-    let paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'cash';
+    let paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'qr';
     if (paymentMethod === 'other') {
       paymentMethod = document.getElementById('customPaymentInput').value.trim() || 'Other';
     }
 
-    // Contact (defaults to 'message' if unselected)
-    const contactMethod = document.querySelector('input[name="contactMethod"]:checked')?.value || 'message';
-    const contactHandle = document.getElementById('contactHandleInput')?.value.trim() || '';
+    // Contact
+    const contactMethod = document.querySelector('input[name="contactMethod"]:checked')?.value || 'line';
+    const contactHandle = document.getElementById('contactHandleInput').value.trim();
 
-    // Front image verification
-    const frontImgSrc = document.getElementById('preview-front')?.src || '';
-    if (!frontImgSrc) {
-      alert('Please provide at least a Front View photo for your listing.');
+    // Verify Front Photo
+    const frontPreview = document.getElementById('preview-front');
+    if (!frontPreview.src || frontPreview.classList.contains('hidden')) {
+      alert('Please upload at least a Front View photo of the product.');
       return;
     }
 
-    pendingProductData = {
-      title: title,
-      price: price,
-      isNegotiable: isNegotiable,
-      category: category,
-      gender: selectedGender || 'unisex',
-      size: selectedSize || 'Free Size',
-      condition: condition,
-      location: location,
-      description: description,
-      paymentMethod: paymentMethod,
-      contactMethod: contactMethod,
-      contactHandle: contactHandle
+    pendingListingPayload = {
+      title,
+      price,
+      is_negotiable: isNegotiable,
+      category,
+      gender: selectedGender,
+      size: selectedSize,
+      condition,
+      location,
+      description,
+      payment_method: paymentMethod,
+      contact_method: contactMethod,
+      contact_handle: contactHandle
     };
 
-    // Update modal preview
-    document.getElementById('modalPreviewImg').src = frontImgSrc;
+    // Populate Modal Preview
+    document.getElementById('modalPreviewImg').src = frontPreview.src;
     document.getElementById('modalPreviewTitle').textContent = title;
     document.getElementById('modalPreviewPrice').textContent = `฿${price.toLocaleString()}`;
-    document.getElementById('modalPreviewCategory').textContent = categoryLabel;
-    document.getElementById('modalPreviewGender').textContent = (selectedGender || 'UNISEX').toUpperCase();
-    document.getElementById('modalPreviewSize').textContent = `📏 Size: ${selectedSize || 'Standard'}`;
-    document.getElementById('modalPreviewCondition').textContent = `✨ ${condition.toUpperCase()}`;
+    document.getElementById('modalPreviewCategory').textContent = categoryLabel.split(' ')[0] || category;
     document.getElementById('modalPreviewLocation').textContent = `📍 ${location}`;
+    document.getElementById('modalPreviewCondition').textContent = condition.toUpperCase();
 
-    const modalNegotiable = document.getElementById('modalPreviewNegotiable');
-    if (isNegotiable) {
-      modalNegotiable.classList.remove('hide');
-    } else {
-      modalNegotiable.classList.add('hide');
-    }
-
-    modal.classList.remove('hide');
+    modal.classList.add('active');
   });
 
   btnEdit?.addEventListener('click', () => {
-    modal.classList.add('hide');
+    modal.classList.remove('active');
   });
 
   btnConfirm?.addEventListener('click', async () => {
-    if (!pendingProductData) return;
+    if (!pendingListingPayload) return;
 
     btnConfirm.disabled = true;
-    btnConfirm.textContent = 'Publishing...';
+    btnConfirm.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">progress_activity</span> Publishing...';
 
     try {
-      const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
-      if (authError || !user) {
-        alert('Please log in before publishing a listing.');
+      const { data: { user }, error: authErr } = await window.supabase.auth.getUser();
+      if (authErr || !user) {
+        alert('Please log in before listing a product.');
+        window.location.href = 'login.html';
         return;
       }
 
@@ -287,7 +303,7 @@ function setupFormSubmission() {
       const leftFile = document.getElementById('imgLeftSide').files[0];
       const rightFile = document.getElementById('imgRightSide').files[0];
 
-      // Upload selected photos concurrently[cite: 21, 28]
+      // Concurrent Storage Uploads
       const [frontUrl, backUrl, leftUrl, rightUrl] = await Promise.all([
         uploadProductImage(frontFile, 'front'),
         uploadProductImage(backFile, 'back'),
@@ -295,19 +311,8 @@ function setupFormSubmission() {
         uploadProductImage(rightFile, 'right')
       ]);
 
-      const newListing = {
-        title: pendingProductData.title,
-        price: pendingProductData.price,
-        is_negotiable: pendingProductData.isNegotiable,
-        category: pendingProductData.category,
-        gender: pendingProductData.gender,
-        size: pendingProductData.size,
-        condition: pendingProductData.condition,
-        location: pendingProductData.location,
-        description: pendingProductData.description,
-        payment_method: pendingProductData.paymentMethod,
-        contact_method: pendingProductData.contactMethod,
-        contact_handle: pendingProductData.contactHandle,
+      const record = {
+        ...pendingListingPayload,
         image_front_url: frontUrl,
         image_back_url: backUrl,
         image_left_url: leftUrl,
@@ -315,15 +320,14 @@ function setupFormSubmission() {
         seller_id: user.id
       };
 
-      await insertProductListing(newListing); // Insert into Supabase products table[cite: 21, 28]
+      await insertProductListing(record);
 
-      modal.classList.add('hide');
-      alert('🎉 Product listed successfully on Supabase!');
+      modal.classList.remove('active');
+      alert('Product listed successfully in the campus marketplace!');
       window.location.href = 'marketplace.html';
     } catch (err) {
-      console.error('Publishing failed:', err);
-      alert(`Upload failed: ${err.message}`);
-    } finally {
+      console.error('Listing creation error:', err);
+      alert(`Publish failed: ${err.message}`);
       btnConfirm.disabled = false;
       btnConfirm.textContent = 'Confirm & Publish';
     }

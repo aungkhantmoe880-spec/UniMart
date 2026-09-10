@@ -1,305 +1,517 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>UniMart - Sell Your Product</title>
 
-  <!-- CSS Stylesheets -->
+  <link rel="manifest" href="../manifest.json" />
+  <meta name="theme-color" content="#006194" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#006194",
+            "primary-container": "#007bb9",
+            "primary-fixed": "#cce5ff",
+            "on-primary-fixed-variant": "#004b73",
+            "on-primary": "#ffffff",
+            secondary: "#00668a",
+            "secondary-fixed": "#c4e7ff",
+            "on-secondary-fixed": "#001e2c",
+            tertiary: "#b61722",
+            "tertiary-fixed": "#ffdad7",
+            surface: "#f9f9ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f1f3ff",
+            "surface-container": "#e9edff",
+            "surface-container-high": "#e1e8fd",
+            "on-surface": "#141b2b",
+            "on-surface-variant": "#3f4850",
+            outline: "#707881",
+            "outline-variant": "#bfc7d2",
+            "inverse-surface": "#293040",
+            "inverse-on-surface": "#edf0ff",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a"
+          }
+        }
+      }
+    };
+  </script>
+
   <link rel="stylesheet" href="../css/global.css" />
   <link rel="stylesheet" href="../css/component.css" />
   <link rel="stylesheet" href="../css/upload.css" />
 </head>
-<body>
 
-  <!-- Top Navigation -->
-  <header class="navbar">
-    <div class="logo">
-      <a href="marketplace.html"><span class="logo-uni">Uni</span><span class="logo-mart">Mart</span></a>
-    </div>
-    <div class="nav-controls">
-      <a href="marketplace.html" class="icon-btn">🏪 Marketplace</a>
-      <a href="messages.html" class="icon-btn">💬 Message</a>
-      <a href="profile.html" class="icon-btn">👤 MyProfile</a>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col">
+
+  <!-- Desktop Header (Full Width matching Marketplace & Inventory) -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-surface-container shadow-[0_1px_8px_rgba(0,97,148,0.05)] pt-safe">
+    <div class="h-16 max-w-[1500px] w-full mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 shrink-0">
+        <a href="marketplace.html" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface" title="Back">
+          <span class="material-symbols-outlined text-[22px]">arrow_back</span>
+        </a>
+        <a href="home.html" class="flex items-center gap-2">
+          <span class="text-2xl font-bold tracking-tight text-primary">Uni<span class="text-on-surface">Mart</span></span>
+        </a>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-6">
+        <a href="home.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Home</a>
+        <a href="marketplace.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Marketplace</a>
+        <a href="upload.html" class="py-5 font-semibold text-primary border-b-2 border-primary text-sm">Sell an Item</a>
+        <a href="mylisting.html" class="py-5 text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">Inventory</a>
+      </nav>
+
+      <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+        <a href="profile.html" class="flex items-center gap-2 p-1 rounded-full hover:bg-surface-container transition-colors" title="My Profile">
+          <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/60 bg-surface-container flex items-center justify-center">
+            <img id="navUserAvatar" alt="Profile" class="w-full h-full object-cover" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23707881'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" />
+          </div>
+        </a>
+        <button id="logoutBtn" class="w-9 h-9 flex items-center justify-center rounded-lg text-tertiary hover:bg-tertiary-fixed/30 transition-colors" title="Log out" type="button">
+          <span class="material-symbols-outlined text-xl">logout</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <main class="upload-container">
-    <div class="upload-card">
-      <h1 class="upload-title">Sell Your Product!</h1>
-      <p class="upload-subtitle">List your item to sell for peers across campus.</p>
+  <!-- Main Content View -->
+  <main class="w-full pt-20 pb-28 md:pb-16 flex-grow flex justify-center">
+    <div class="max-w-[1500px] w-full mx-auto px-4 md:px-8 py-4 flex flex-col items-center">
+      
+      <!-- Card Shell -->
+      <div class="w-full max-w-4xl bg-surface-container-lowest rounded-2xl shadow-sm border border-surface-container overflow-hidden">
+        
+        <!-- Header Banner -->
+        <div class="p-6 md:p-8 bg-gradient-to-r from-surface-container-lowest via-surface-container-low to-surface-container-lowest border-b border-surface-container">
+          <span class="text-[11px] uppercase tracking-wider font-semibold text-primary px-2.5 py-0.5 rounded-full bg-primary-fixed">Campus Exchange</span>
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-on-surface mt-2">Sell Your Product!</h1>
+          <p class="text-xs sm:text-sm text-on-surface-variant mt-1">List your item to sell for peers across campus safely and directly.</p>
+        </div>
 
-      <form id="uploadForm" class="upload-form">
-        <!-- 4 Image Upload Slots -->
-        <div class="image-upload-grid">
-          <!-- Slot 1: Front -->
-          <div class="image-slot" id="slot-front">
-            <label for="imgFront" class="image-slot-label" id="label-front">
-              <span class="image-slot-icon">📷</span>
-              <span>Front View</span>
-            </label>
-            <input type="file" id="imgFront" name="imgFront" accept="image/*" required />
-            <img id="preview-front" class="slot-preview hide" alt="Front Preview" />
-            <div class="slot-actions hide" id="actions-front">
-              <button type="button" class="btn-slot-view" title="View Full Image">👁️</button>
-              <button type="button" class="btn-slot-delete" title="Delete Photo">✖</button>
+        <form id="uploadForm" class="p-6 md:p-8 flex flex-col gap-6">
+
+          <!-- 1. Photo Upload Grid (4 Angles) -->
+          <div>
+            <div class="flex items-baseline justify-between mb-2">
+              <div>
+                <span class="text-xs sm:text-sm font-bold text-on-surface block">Product Photos <span class="text-tertiary">*</span></span>
+                <span class="text-[11px] text-on-surface-variant">Upload at least a clear Front View photo (Up to 4 angles).</span>
+              </div>
+              <span class="text-[11px] font-semibold text-primary hidden sm:inline-block">JPG, PNG up to 10MB</span>
             </div>
-          </div> 
 
-          <!-- Slot 2: Back -->
-          <div class="image-slot" id="slot-back">
-            <label for="imgBack" class="image-slot-label" id="label-back">
-              <span class="image-slot-icon">📷</span>
-              <span>Back View</span>
-            </label>
-            <input type="file" id="imgBack" name="imgBack" accept="image/*" />
-            <img id="preview-back" class="slot-preview hide" alt="Back Preview" />
-            <div class="slot-actions hide" id="actions-back">
-              <button type="button" class="btn-slot-view" title="View Full Image">👁️</button>
-              <button type="button" class="btn-slot-delete" title="Delete Photo">✖</button>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              
+              <!-- Slot 1: Front View (Required) -->
+              <div class="relative flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container-low border border-dashed border-outline-variant hover:border-primary transition-all min-h-[120px] text-center" id="slot-front">
+                <input type="file" id="imgFront" accept="image/*" class="sr-only" required />
+                <label for="imgFront" id="label-front" class="flex flex-col items-center cursor-pointer pointer-events-auto w-full h-full justify-center">
+                  <div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-xs mb-1.5">
+                    <span class="material-symbols-outlined text-xl">photo_camera</span>
+                  </div>
+                  <span class="text-xs font-bold text-on-surface">Front View</span>
+                  <span class="text-[10px] text-primary font-semibold mt-0.5">Primary Angle</span>
+                </label>
+                
+                <img id="preview-front" alt="Front Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-xl" />
+                
+                <div id="actions-front" class="hidden absolute top-2 right-2 flex items-center gap-1 z-10">
+                  <button type="button" class="btn-slot-view w-6 h-6 rounded-full bg-surface-container-lowest/90 text-on-surface flex items-center justify-center shadow hover:text-primary transition-colors" title="View Full Photo">
+                    <span class="material-symbols-outlined text-xs">visibility</span>
+                  </button>
+                  <button type="button" class="btn-slot-delete w-6 h-6 rounded-full bg-surface-container-lowest/90 text-tertiary flex items-center justify-center shadow hover:bg-error-container transition-colors" title="Remove Photo">
+                    <span class="material-symbols-outlined text-xs">close</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Slot 2: Back View -->
+              <div class="relative flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container-low border border-dashed border-outline-variant hover:border-primary transition-all min-h-[120px] text-center" id="slot-back">
+                <input type="file" id="imgBack" accept="image/*" class="sr-only" />
+                <label for="imgBack" id="label-back" class="flex flex-col items-center cursor-pointer pointer-events-auto w-full h-full justify-center">
+                  <div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-xs mb-1.5">
+                    <span class="material-symbols-outlined text-xl">flip_camera_ios</span>
+                  </div>
+                  <span class="text-xs font-bold text-on-surface">Back View</span>
+                  <span class="text-[10px] text-on-surface-variant font-medium mt-0.5">Ports / Cover</span>
+                </label>
+                
+                <img id="preview-back" alt="Back Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-xl" />
+                
+                <div id="actions-back" class="hidden absolute top-2 right-2 flex items-center gap-1 z-10">
+                  <button type="button" class="btn-slot-view w-6 h-6 rounded-full bg-surface-container-lowest/90 text-on-surface flex items-center justify-center shadow hover:text-primary transition-colors" title="View Full Photo">
+                    <span class="material-symbols-outlined text-xs">visibility</span>
+                  </button>
+                  <button type="button" class="btn-slot-delete w-6 h-6 rounded-full bg-surface-container-lowest/90 text-tertiary flex items-center justify-center shadow hover:bg-error-container transition-colors" title="Remove Photo">
+                    <span class="material-symbols-outlined text-xs">close</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Slot 3: Left Side -->
+              <div class="relative flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container-low border border-dashed border-outline-variant hover:border-primary transition-all min-h-[120px] text-center" id="slot-left">
+                <input type="file" id="imgLeftSide" accept="image/*" class="sr-only" />
+                <label for="imgLeftSide" id="label-left" class="flex flex-col items-center cursor-pointer pointer-events-auto w-full h-full justify-center">
+                  <div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-xs mb-1.5">
+                    <span class="material-symbols-outlined text-xl">rotate_left</span>
+                  </div>
+                  <span class="text-xs font-bold text-on-surface">Left Side</span>
+                  <span class="text-[10px] text-on-surface-variant font-medium mt-0.5">Profile Edge</span>
+                </label>
+                
+                <img id="preview-left" alt="Left Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-xl" />
+                
+                <div id="actions-left" class="hidden absolute top-2 right-2 flex items-center gap-1 z-10">
+                  <button type="button" class="btn-slot-view w-6 h-6 rounded-full bg-surface-container-lowest/90 text-on-surface flex items-center justify-center shadow hover:text-primary transition-colors" title="View Full Photo">
+                    <span class="material-symbols-outlined text-xs">visibility</span>
+                  </button>
+                  <button type="button" class="btn-slot-delete w-6 h-6 rounded-full bg-surface-container-lowest/90 text-tertiary flex items-center justify-center shadow hover:bg-error-container transition-colors" title="Remove Photo">
+                    <span class="material-symbols-outlined text-xs">close</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Slot 4: Right Side -->
+              <div class="relative flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container-low border border-dashed border-outline-variant hover:border-primary transition-all min-h-[120px] text-center" id="slot-right">
+                <input type="file" id="imgRightSide" accept="image/*" class="sr-only" />
+                <label for="imgRightSide" id="label-right" class="flex flex-col items-center cursor-pointer pointer-events-auto w-full h-full justify-center">
+                  <div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-xs mb-1.5">
+                    <span class="material-symbols-outlined text-xl">rotate_right</span>
+                  </div>
+                  <span class="text-xs font-bold text-on-surface">Right Side</span>
+                  <span class="text-[10px] text-on-surface-variant font-medium mt-0.5">Finish & Wear</span>
+                </label>
+                
+                <img id="preview-right" alt="Right Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-xl" />
+                
+                <div id="actions-right" class="hidden absolute top-2 right-2 flex items-center gap-1 z-10">
+                  <button type="button" class="btn-slot-view w-6 h-6 rounded-full bg-surface-container-lowest/90 text-on-surface flex items-center justify-center shadow hover:text-primary transition-colors" title="View Full Photo">
+                    <span class="material-symbols-outlined text-xs">visibility</span>
+                  </button>
+                  <button type="button" class="btn-slot-delete w-6 h-6 rounded-full bg-surface-container-lowest/90 text-tertiary flex items-center justify-center shadow hover:bg-error-container transition-colors" title="Remove Photo">
+                    <span class="material-symbols-outlined text-xs">close</span>
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          <!-- Slot 3: Left -->
-          <div class="image-slot" id="slot-left">
-            <label for="imgLeftSide" class="image-slot-label" id="label-left">
-              <span class="image-slot-icon">📷</span>
-              <span>Left Side</span>
-            </label>
-            <input type="file" id="imgLeftSide" name="imgLeftSide" accept="image/*" />
-            <img id="preview-left" class="slot-preview hide" alt="Left Side Preview" />
-            <div class="slot-actions hide" id="actions-left">
-              <button type="button" class="btn-slot-view" title="View Full Image">👁️</button>
-              <button type="button" class="btn-slot-delete" title="Delete Photo">✖</button>
+          <!-- 2. Product Name & Category -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-on-surface mb-1" for="productName">
+                Product Name <span class="text-tertiary">*</span>
+              </label>
+              <input type="text" id="productName" class="w-full h-11 px-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all" placeholder="e.g. Scientific Calculator Casio fx-991EX" required />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-on-surface mb-1" for="productCategory">
+                Category <span class="text-tertiary">*</span>
+              </label>
+              <div class="relative">
+                <select id="productCategory" class="w-full h-11 pl-3.5 pr-10 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none appearance-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary cursor-pointer transition-all" required>
+                  <option disabled selected value="">Select Category ▾</option>
+                  <option value="clothing">👕 Clothing & Uniforms</option>
+                  <option value="electronics">💻 Electronics & Gadgets</option>
+                  <option value="books">📚 Textbooks & Notes</option>
+                  <option value="dorm">🛏️ Dorm Essentials & Furniture</option>
+                  <option value="other">✨ Other (Type Custom)</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-3 top-3 text-on-surface-variant text-xl pointer-events-none">expand_more</span>
+              </div>
+              <input type="text" id="customCategoryInput" class="hidden mt-2 w-full h-11 px-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" placeholder="Enter custom category" />
             </div>
           </div>
 
-          <!-- Slot 4: Right -->
-          <div class="image-slot" id="slot-right">
-            <label for="imgRightSide" class="image-slot-label" id="label-right">
-              <span class="image-slot-icon">📷</span>
-              <span>Right Side</span>
-            </label>
-            <input type="file" id="imgRightSide" name="imgRightSide" accept="image/*" />
-            <img id="preview-right" class="slot-preview hide" alt="Right Side Preview" />
-            <div class="slot-actions hide" id="actions-right">
-              <button type="button" class="btn-slot-view" title="View Full Image">👁️</button>
-              <button type="button" class="btn-slot-delete" title="Delete Photo">✖</button>
+          <!-- 3. Price & Negotiable Checkbox -->
+          <div class="p-4 rounded-xl bg-surface-container-low border border-surface-container flex flex-col gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+              <div>
+                <label class="block text-xs font-bold text-on-surface mb-1" for="productPrice">
+                  Price (฿ THB) <span class="text-tertiary">*</span>
+                </label>
+                <div class="relative flex items-center">
+                  <span class="absolute left-3.5 text-on-surface font-bold text-sm">฿</span>
+                  <input type="number" id="productPrice" min="0" step="1" class="w-full h-11 pl-9 pr-3.5 rounded-xl bg-surface-container-lowest text-on-surface text-base font-bold outline-none border border-surface-container focus:ring-2 focus:ring-primary" placeholder="0 for Free" required />
+                </div>
+              </div>
+
+              <div class="flex items-center h-11">
+                <label class="flex items-center gap-2 cursor-pointer select-none">
+                  <input type="checkbox" id="isNegotiable" class="w-5 h-5 rounded accent-primary cursor-pointer" />
+                  <span class="text-xs sm:text-sm font-semibold text-on-surface">Price is negotiable with peers</span>
+                </label>
+              </div>
             </div>
-          </div>   
-        </div>
-
-        <!-- Product Name -->
-        <div class="form-group">
-          <label for="productName" class="form-label">Product Name</label>
-          <input type="text" id="productName" name="productName" class="form-input" placeholder="e.g. Scientific Calculator" required />
-        </div> 
-
-        <!-- Category Dropdown -->
-        <div class="form-group">
-          <label for="productCategory" class="form-label">Category</label>
-          <select id="productCategory" name="productCategory" class="form-select" required>
-            <option value="" disabled selected>Select Category ▾</option>
-            <option value="clothing">👕 Clothing</option>
-            <option value="electronics">💻 Electronics</option>
-            <option value="books">📚 Books & Notes</option>
-            <option value="dorm">🛏️ Dorm Essentials</option>
-            <option value="other">✨ Other (Type Custom)</option>
-          </select>
-          <input type="text" id="customCategoryInput" name="customCategoryInput" class="form-input custom-field-hidden" placeholder="Enter custom category" />
-        </div>
-
-        <!-- Price -->
-        <div class="form-group">
-          <label for="productPrice" class="form-label">Price (฿ THB)</label>
-          <input type="number" id="productPrice" name="productPrice" class="form-input" placeholder="0 for Free" min="0" step="1" required />
-        </div> 
-
-        <!-- Negotiable Checkbox -->
-        <div class="checkbox-group">
-          <label for="isNegotiable" class="checkbox-label">Price is negotiable</label>
-          <input type="checkbox" id="isNegotiable" name="isNegotiable" />
-        </div> 
-
-        <!-- Gender Section (No default selection) -->
-        <div class="form-group">
-          <label class="form-label">Gender</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" name="productGender" value="unisex" />
-              <span>Unisex 🚻</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="productGender" value="male" />
-              <span>Male 🚹</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="productGender" value="female" />
-              <span>Female 🚺</span>
-            </label>
           </div>
-        </div>
 
-        <!-- Size Section (No default selection) -->
-        <div class="form-group">
-          <label class="form-label">Size</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" name="productSize" value="S" />
-              <span>Small (S)</span>
+          <!-- 4. Target / Gender -->
+          <div>
+            <label class="block text-xs font-bold text-on-surface mb-1.5">
+              Gender / Style <span class="text-outline font-normal">(Optional)</span>
             </label>
-            <label class="radio-label">
-              <input type="radio" name="productSize" value="M" />
-              <span>Medium (M)</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="productSize" value="L" />
-              <span>Large (L)</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="productSize" value="XL" />
-              <span>XL</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="productSize" value="XXL" />
-              <span>XXL</span>
-            </label>
+            <div class="grid grid-cols-3 gap-2 sm:w-2/3">
+              <label class="flex items-center justify-center p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed font-semibold text-xs text-center">
+                <input type="radio" name="productGender" value="unisex" class="sr-only" checked />
+                <span>Unisex 🚻</span>
+              </label>
+              <label class="flex items-center justify-center p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed font-semibold text-xs text-center">
+                <input type="radio" name="productGender" value="male" class="sr-only" />
+                <span>Male 🚹</span>
+              </label>
+              <label class="flex items-center justify-center p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed font-semibold text-xs text-center">
+                <input type="radio" name="productGender" value="female" class="sr-only" />
+                <span>Female 🚺</span>
+              </label>
+            </div>
           </div>
-        </div>
 
-        <!-- Condition -->
-        <div class="form-group">
-          <label class="form-label">Condition</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" name="productCondition" value="new" required />
-              <span>New 🆕</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="productCondition" value="like-new" />
-              <span>Like New ✨</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="productCondition" value="used" />
-              <span>Used 📦</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="productCondition" value="other" id="conditionOtherRadio" />
-              <span>Other ✍️</span>
-            </label>
+          <!-- 5. Size Selection (Includes Free Size) -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="text-xs font-bold text-on-surface">
+                Size <span class="text-outline font-normal">(Apparel, fit, or dimensions)</span>
+              </label>
+              <span class="text-[11px] text-outline">Default: Free Size / Standard</span>
+            </div>
+            <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
+                <input type="radio" name="productSize" value="S" class="sr-only" />
+                <span>S</span>
+              </label>
+              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
+                <input type="radio" name="productSize" value="M" class="sr-only" />
+                <span>M</span>
+              </label>
+              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
+                <input type="radio" name="productSize" value="L" class="sr-only" />
+                <span>L</span>
+              </label>
+              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
+                <input type="radio" name="productSize" value="XL" class="sr-only" />
+                <span>XL</span>
+              </label>
+              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
+                <input type="radio" name="productSize" value="XXL" class="sr-only" />
+                <span>XXL</span>
+              </label>
+              <label class="flex items-center justify-center py-2.5 px-2 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary has-[:checked]:text-on-primary font-semibold text-xs text-center">
+                <input type="radio" name="productSize" value="Free Size" class="sr-only" checked />
+                <span>Free Size</span>
+              </label>
+            </div>
           </div>
-          <input type="text" id="customConditionInput" name="customConditionInput" class="form-input custom-field-hidden" placeholder="Describe condition (e.g., Minor scratch)" />
-        </div>
 
-        <!-- Description -->
-        <div class="form-group">
-          <label for="productDescription" class="form-label">Description (Optional)</label>
-          <textarea id="productDescription" name="productDescription" class="form-textarea" rows="4" placeholder="Mention any details about condition, reason for selling, or usage history..."></textarea>
-        </div> 
-
-        <!-- Pick-up Location -->
-        <div class="form-group">
-          <label for="productLocation" class="form-label">Pick-up Location</label>
-          <input type="text" id="productLocation" name="productLocation" class="form-input" placeholder="e.g., Dorm Hall B, Main Library, Engineering Building" required />
-        </div> 
-
-        <!-- Payment Method -->
-        <div class="form-group">
-          <label class="form-label">Payment Method</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" name="paymentMethod" value="qr" required />
-              <span>📱 QR Payment</span>
+          <!-- 6. Condition -->
+          <div>
+            <label class="block text-xs font-bold text-on-surface mb-1.5">
+              Condition <span class="text-tertiary">*</span>
             </label>
-            <label class="radio-label">
-              <input type="radio" name="paymentMethod" value="transfer" />
-              <span>🏦 Bank Transfer</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="paymentMethod" value="cash" />
-              <span>💵 Cash on Meetup</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="paymentMethod" value="other" id="paymentOtherRadio" />
-              <span>✨ Other</span>
-            </label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex flex-col items-start">
+                <input type="radio" name="productCondition" value="new" class="sr-only" checked />
+                <div class="flex items-center gap-1 font-bold text-sm mb-0.5">
+                  <span>New</span> <span>🆕</span>
+                </div>
+                <span class="text-[10px] opacity-75">Unopened / Boxed</span>
+              </label>
+              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex flex-col items-start">
+                <input type="radio" name="productCondition" value="like-new" class="sr-only" />
+                <div class="flex items-center gap-1 font-bold text-sm mb-0.5">
+                  <span>Like New</span> <span>✨</span>
+                </div>
+                <span class="text-[10px] opacity-75">Barely used, 0 flaws</span>
+              </label>
+              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex flex-col items-start">
+                <input type="radio" name="productCondition" value="used" class="sr-only" />
+                <div class="flex items-center gap-1 font-bold text-sm mb-0.5">
+                  <span>Used</span> <span>📦</span>
+                </div>
+                <span class="text-[10px] opacity-75">Normal campus wear</span>
+              </label>
+              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex flex-col items-start">
+                <input type="radio" name="productCondition" value="other" id="conditionOtherRadio" class="sr-only" />
+                <div class="flex items-center gap-1 font-bold text-sm mb-0.5">
+                  <span>Other</span> <span>✍️</span>
+                </div>
+                <span class="text-[10px] opacity-75">Custom description</span>
+              </label>
+            </div>
+            <input type="text" id="customConditionInput" class="hidden mt-2 w-full h-11 px-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" placeholder="Describe condition (e.g. Minor scratch on edge)" />
           </div>
-          <input type="text" id="customPaymentInput" name="customPaymentInput" class="form-input custom-field-hidden" placeholder="Specify payment method (e.g., TrueMoney Wallet)" />
-        </div>
 
-        <!-- Contact Method (No default selection) -->
-        <div class="form-group">
-          <label class="form-label">Preferred Contact Method</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" name="contactMethod" value="message" />
-              <span>💬 In-App Chat</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="contactMethod" value="line" id="contactLineRadio" />
-              <span>🟢 LINE</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="contactMethod" value="telegram" id="contactTelegramRadio" />
-              <span>✈️ Telegram</span>
-            </label>
+          <!-- 7. Description (Optional) -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs font-bold text-on-surface" for="productDescription">
+                Description <span class="text-outline font-normal">(Optional)</span>
+              </label>
+              <span class="text-[11px] text-outline" id="charCounter">0 / 800</span>
+            </div>
+            <textarea id="productDescription" maxlength="800" rows="4" class="w-full p-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container placeholder:text-outline outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary resize-y" placeholder="Mention any details about condition, reason for selling, or usage history..."></textarea>
           </div>
-          <input type="text" id="contactHandleInput" name="contactHandleInput" class="form-input custom-field-hidden" placeholder="Enter your LINE ID or Telegram @username" />
-        </div>
 
-        <!-- Form Actions -->
-        <div class="form-actions">
-          <a href="marketplace.html" class="btn-cancel">Cancel</a>
-          <button type="submit" class="btn-submit">Publish Product</button>
-        </div>
-      </form>
+          <!-- 8. Pick-up Location -->
+          <div>
+            <label class="block text-xs font-bold text-on-surface mb-1" for="productLocation">
+              Campus Pick-up Location <span class="text-tertiary">*</span>
+            </label>
+            <div class="relative flex items-center">
+              <span class="material-symbols-outlined absolute left-3.5 text-primary text-xl">location_on</span>
+              <input type="text" id="productLocation" class="w-full h-11 pl-10 pr-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container placeholder:text-outline outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" placeholder="e.g. Dorm Hall B, Main Library 1st Floor, Engineering Canteen" required />
+            </div>
+            <div class="flex flex-wrap gap-1.5 mt-2">
+              <button type="button" class="quick-loc-btn px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium hover:bg-primary-fixed hover:text-on-primary-fixed transition-colors" data-loc="Main Library Floor 1">📍 Main Library</button>
+              <button type="button" class="quick-loc-btn px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium hover:bg-primary-fixed hover:text-on-primary-fixed transition-colors" data-loc="Dorm Hall B Lobby">📍 Dorm Hall B</button>
+              <button type="button" class="quick-loc-btn px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium hover:bg-primary-fixed hover:text-on-primary-fixed transition-colors" data-loc="Student Union Hub">📍 Student Union</button>
+            </div>
+          </div>
+
+          <!-- 9. Payment Methods -->
+          <div>
+            <label class="block text-xs font-bold text-on-surface mb-1.5">
+              Accepted Payment Method <span class="text-tertiary">*</span>
+            </label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <label class="p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center gap-2">
+                <input type="radio" name="paymentMethod" value="qr" class="sr-only" checked />
+                <span>🧮</span>
+                <span class="text-xs font-bold">PromptPay / QR</span>
+              </label>
+              <label class="p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center gap-2">
+                <input type="radio" name="paymentMethod" value="transfer" class="sr-only" />
+                <span>🏦</span>
+                <span class="text-xs font-bold">Bank Transfer</span>
+              </label>
+              <label class="p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center gap-2">
+                <input type="radio" name="paymentMethod" value="cash" class="sr-only" />
+                <span>💵</span>
+                <span class="text-xs font-bold">Cash Meetup</span>
+              </label>
+              <label class="p-2.5 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center gap-2">
+                <input type="radio" name="paymentMethod" value="other" id="paymentOtherRadio" class="sr-only" />
+                <span>✨</span>
+                <span class="text-xs font-bold">Other Method</span>
+              </label>
+            </div>
+            <input type="text" id="customPaymentInput" class="hidden mt-2 w-full h-11 px-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" placeholder="Specify payment method (e.g. TrueMoney Wallet)" />
+          </div>
+
+          <!-- 10. Preferred Contact Method (External Messengers Only) -->
+          <div>
+            <label class="block text-xs font-bold text-on-surface mb-1.5">
+              Preferred Contact Channel <span class="text-tertiary">*</span>
+            </label>
+            <div class="grid grid-cols-2 gap-2 sm:w-2/3">
+              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center justify-center gap-2 font-bold text-xs">
+                <input type="radio" name="contactMethod" value="line" class="sr-only" checked />
+                <span>🟢</span>
+                <span>LINE ID</span>
+              </label>
+              <label class="p-3 rounded-xl bg-surface-container-low border border-surface-container cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed flex items-center justify-center gap-2 font-bold text-xs">
+                <input type="radio" name="contactMethod" value="telegram" class="sr-only" />
+                <span>✈️</span>
+                <span>Telegram</span>
+              </label>
+            </div>
+            
+            <div class="mt-2">
+              <input type="text" id="contactHandleInput" class="w-full h-11 px-3.5 rounded-xl bg-surface-container-low text-on-surface text-sm border border-surface-container outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" placeholder="Enter your LINE ID" required />
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="pt-4 border-t border-surface-container flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
+            <a href="marketplace.html" class="w-full sm:w-auto h-11 px-6 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold flex items-center justify-center transition-colors">
+              Cancel
+            </a>
+            <button type="submit" id="btnSubmitForm" class="w-full sm:w-auto h-11 px-8 rounded-xl bg-primary text-on-primary text-xs font-semibold hover:bg-primary-container shadow-sm flex items-center justify-center gap-2 transition-all">
+              <span class="material-symbols-outlined text-base">storefront</span>
+              <span>Review & Publish</span>
+            </button>
+          </div>
+
+        </form>
+
+      </div>
     </div>
   </main>
 
-  <!-- Marketplace Confirmation Preview Modal -->
-  <div id="previewModal" class="modal-backdrop hide">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 class="modal-title">Review Your Marketplace Listing</h3>
-        <p class="modal-subtitle">This is how buyers will see your item on campus.</p>
+  <!-- Review Confirmation Modal -->
+  <div id="previewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
+    <div id="previewModalDialog" class="w-full max-w-sm rounded-2xl bg-surface-container-lowest shadow-2xl p-5 flex flex-col gap-4 transform scale-95 transition-transform duration-200 border border-surface-container">
+      <div>
+        <h3 class="text-base font-bold text-on-surface">Review Your Listing</h3>
+        <p class="text-xs text-on-surface-variant">Here is how peers will see your card in the marketplace feed.</p>
       </div>
 
-      <div class="product-card-preview">
-        <div class="card-image-wrap">
-          <img id="modalPreviewImg" src="" alt="Listing Image" />
-          <span class="card-badge" id="modalPreviewCategory">Category</span>
+      <!-- Marketplace Card Simulation -->
+      <div class="rounded-xl overflow-hidden border border-surface-container bg-surface-container-lowest shadow-xs">
+        <div class="relative aspect-[4/3] w-full bg-surface-container overflow-hidden">
+          <img id="modalPreviewImg" alt="Listing" class="w-full h-full object-cover" src="" />
+          <span id="modalPreviewCategory" class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-surface-container-lowest/90 text-[10px] font-bold text-primary shadow-xs">Category</span>
         </div>
-
-        <div class="card-content">
-          <h4 class="card-title" id="modalPreviewTitle">Product Title</h4>
-          <div class="card-price-row">
-            <span class="card-price" id="modalPreviewPrice">฿0</span>
-            <span class="card-negotiable hide" id="modalPreviewNegotiable">Negotiable</span>
-          </div>
-          <div class="card-meta">
-            <span id="modalPreviewGender">🚻 Unisex</span>
-            <span>•</span>
-            <span id="modalPreviewSize">📏 Size: Standard</span>
-            <span>•</span>
-            <span id="modalPreviewCondition">✨ Condition</span>
-            <span>•</span>
-            <span id="modalPreviewLocation">📍 Location</span>
+        <div class="p-3.5 flex flex-col gap-1.5">
+          <span id="modalPreviewPrice" class="text-lg font-bold text-on-surface leading-tight">฿0</span>
+          <h4 id="modalPreviewTitle" class="text-xs font-semibold text-on-surface line-clamp-1">Product Title</h4>
+          <div class="flex items-center justify-between text-[11px] text-on-surface-variant pt-1 border-t border-surface-container/60">
+            <span id="modalPreviewLocation" class="truncate">📍 Campus</span>
+            <span id="modalPreviewCondition" class="font-semibold text-primary">Used</span>
           </div>
         </div>
       </div>
 
-      <div class="modal-actions">
-        <button type="button" id="btnEditListing" class="btn-cancel">Edit Details</button>
-        <button type="button" id="btnConfirmPublish" class="btn-submit">Confirm & Publish</button>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" id="btnEditListing" class="px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-semibold transition-colors">Edit</button>
+        <button type="button" id="btnConfirmPublish" class="px-5 py-2 rounded-xl bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold shadow-sm transition-colors flex items-center gap-1.5">
+          <span>Confirm & Publish</span>
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Fullscreen Photo Lightbox Modal -->
-  <div id="imageLightboxModal" class="upload-lightbox hide">
-    <span class="upload-lightbox-close" id="uploadLightboxClose">&times;</span>
-    <img id="uploadLightboxImg" src="" alt="Full Preview" />
+  <!-- Fullscreen Lightbox Modal -->
+  <div id="imageLightboxModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-200 cursor-zoom-out">
+    <button id="uploadLightboxClose" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer" type="button">
+      <span class="material-symbols-outlined text-2xl">close</span>
+    </button>
+    <img id="uploadLightboxImg" src="" alt="Full Preview" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl" />
   </div>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-surface-container shadow-[0_-2px_12px_rgba(0,102,138,0.08)] pb-safe">
+    <div class="flex items-center justify-around h-16 px-2">
+      <a href="home.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">home</span>
+        <span class="text-[11px]">Home</span>
+      </a>
+      <a href="marketplace.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">storefront</span>
+        <span class="text-[11px]">Market</span>
+      </a>
+      <a href="upload.html" class="mobile-nav-item active flex flex-col items-center justify-center gap-1 min-w-[50px] text-primary font-semibold">
+        <span class="material-symbols-outlined text-[22px]">add_circle</span>
+        <span class="text-[11px]">Sell</span>
+      </a>
+      <a href="mylisting.html" class="flex flex-col items-center justify-center gap-1 min-w-[50px] text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+        <span class="text-[11px]">Inventory</span>
+      </a>
+    </div>
+  </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js"></script>
