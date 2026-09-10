@@ -61,7 +61,7 @@
       
       <!-- Back button and Brand -->
       <div class="flex items-center gap-3 shrink-0">
-        <a href="marketplace.html" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface">
+        <a href="marketplace.html" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface" title="Back to Marketplace">
           <span class="material-symbols-outlined text-[22px]">arrow_back</span>
         </a>
         <a href="marketplace.html" class="flex items-center gap-2">
@@ -79,8 +79,10 @@
 
       <!-- Right Profile Section -->
       <div class="flex items-center gap-2 sm:gap-4 shrink-0">
-        <a href="profile.html" class="flex items-center gap-2 p-1 rounded-full hover:bg-surface-container transition-colors">
-          <img id="navUserAvatar" alt="User Profile" class="w-8 h-8 rounded-full object-cover bg-surface-container" src="https://via.placeholder.com/150?text=U" />
+        <a href="profile.html" class="flex items-center gap-2 p-1 rounded-full hover:bg-surface-container transition-colors" title="My Profile">
+          <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/60 bg-surface-container flex items-center justify-center">
+            <img id="navUserAvatar" alt="Profile" class="w-full h-full object-cover" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23707881'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" />
+          </div>
         </a>
       </div>
     </div>
@@ -111,19 +113,23 @@
         <!-- Left Column: Gallery (7 Cols) -->
         <div class="lg:col-span-7 flex flex-col-reverse sm:flex-row gap-4">
           <!-- Thumbnail Strips -->
-          <div id="galleryThumbnails" class="flex sm:flex-col gap-2.5 shrink-0 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0">
-            <!-- Dynamic thumbnails injected by product.js -->
-          </div>
+          <div id="galleryThumbnails" class="flex sm:flex-col gap-2.5 shrink-0 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0"></div>
 
           <!-- Main Hero Image Display -->
-          <div class="relative flex-1 rounded-2xl overflow-hidden bg-surface-container-lowest border border-surface-container shadow-sm group">
+          <div class="relative flex-1 rounded-2xl overflow-hidden bg-surface-container-lowest border border-surface-container shadow-sm group cursor-zoom-in" id="mainHeroFrame" title="Click to view full screen">
             <div class="relative w-full product-hero-aspect bg-surface-container-low overflow-hidden">
-              <img id="mainDisplayImg" alt="Product Image" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://via.placeholder.com/600x450?text=Loading..." />
+              <img id="mainDisplayImg" alt="Product Image" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="" />
               
               <!-- Photo Counter Indicator -->
               <div class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-surface-container-lowest/90 backdrop-blur text-on-surface shadow-xs flex items-center gap-1.5 text-xs font-semibold pointer-events-none">
                 <span class="material-symbols-outlined text-sm text-primary">photo_camera</span>
                 <span id="galleryCounter">1 / 1</span>
+              </div>
+
+              <!-- Zoom prompt hint -->
+              <div class="absolute top-3 right-3 px-2 py-1 rounded-md bg-inverse-surface/60 backdrop-blur text-inverse-on-surface text-[11px] font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <span class="material-symbols-outlined text-[14px]">fullscreen</span>
+                <span>Zoom</span>
               </div>
             </div>
           </div>
@@ -204,7 +210,9 @@
 
           <!-- Seller Profile Card -->
           <div class="rounded-xl bg-surface-container-low p-4 flex items-center gap-3">
-            <img id="sellerAvatar" alt="Seller Avatar" class="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20 bg-surface-container" src="https://via.placeholder.com/150?text=User" />
+            <div class="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary/20 bg-surface-container shrink-0 flex items-center justify-center">
+              <img id="sellerAvatar" alt="Seller Avatar" class="w-full h-full object-cover" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23707881'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" />
+            </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-1.5">
                 <span id="sellerName" class="text-sm font-bold text-on-surface truncate">Student Seller</span>
@@ -251,6 +259,14 @@
     </div>
   </aside>
 
+  <!-- Fullscreen Photo Lightbox Modal -->
+  <div id="imageLightboxModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-200 cursor-zoom-out">
+    <button id="closeLightboxBtn" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer" type="button" title="Close">
+      <span class="material-symbols-outlined text-2xl">close</span>
+    </button>
+    <img id="lightboxFullImg" src="" alt="Fullscreen View" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl transition-transform duration-200 cursor-default" />
+  </div>
+
   <!-- In-App Chat Modal Dialog -->
   <div id="contactModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
     <div id="modalDialog" class="w-full max-w-lg rounded-2xl bg-surface-container-lowest shadow-2xl p-6 flex flex-col gap-4 transform scale-95 transition-transform duration-200">
@@ -258,7 +274,9 @@
       <!-- Modal Header -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <img id="modalSellerAvatar" alt="Seller" class="w-10 h-10 rounded-full object-cover bg-surface-container" src="https://via.placeholder.com/150?text=U" />
+          <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container shrink-0 flex items-center justify-center">
+            <img id="modalSellerAvatar" alt="Seller" class="w-full h-full object-cover" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23707881'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" />
+          </div>
           <div>
             <h3 id="modalSellerTitle" class="text-base font-bold text-on-surface">Message Seller</h3>
             <p class="text-xs text-on-surface-variant">Typically replies within campus hours</p>
@@ -271,7 +289,7 @@
 
       <!-- Item Context Summary -->
       <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low">
-        <img id="modalProductImg" alt="Product" class="w-12 h-12 rounded-lg object-cover" src="https://via.placeholder.com/150?text=Item" />
+        <img id="modalProductImg" alt="Product" class="w-12 h-12 rounded-lg object-cover" src="" />
         <div class="flex-1 min-w-0">
           <div id="modalProductTitle" class="text-xs font-semibold text-on-surface truncate">Product Name</div>
           <div id="modalProductPrice" class="text-sm font-bold text-primary">฿0</div>

@@ -14,18 +14,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Load Auth State
+  // 1. Load Auth State and Header Profile Avatar
   const { data: { user } } = await window.supabase.auth.getUser();
   currentStudentUser = user;
+  if (user) {
+    loadLoggedInUserAvatar(user.id);
+  }
 
-  // Fetch product data and load view
+  // 2. Fetch product data and populate view
   await loadProductView(productId);
 
-  // Setup Interaction Hooks
+  // 3. Setup Interaction Hooks & Fullscreen Lightbox
   setupFavoriteHooks();
   setupContactHooks();
   setupModalDismissals();
+  setupLightboxListeners();
 });
+
+// Fetch and display logged-in student's avatar in top navbar
+async function loadLoggedInUserAvatar(userId) {
+  const navAvatar = document.getElementById('navUserAvatar');
+  if (!navAvatar) return;
+
+  try {
+    const { data: profile } = await window.supabase
+      .from('profiles')
+      .select('avatar_url')
+      .eq('id', userId)
+      .single();
+
+    if (profile?.avatar_url && profile.avatar_url.trim() !== '') {
+      navAvatar.src = profile.avatar_url;
+    }
+  } catch (err) {
+    console.warn('Navbar profile avatar fetch error:', err);
+  }
+}
 
 // Load full product and seller data concurrently
 async function loadProductView(productId) {
@@ -122,7 +146,7 @@ function renderProductData() {
   if (currentSeller) {
     document.getElementById('sellerName').textContent = currentSeller.full_name || 'UniMart Student';
     document.getElementById('sellerAcademic').textContent = `${currentSeller.university || 'Campus'} • ${currentSeller.faculty || 'Student'}`;
-    if (currentSeller.avatar_url) {
+    if (currentSeller.avatar_url && currentSeller.avatar_url.trim() !== '') {
       document.getElementById('sellerAvatar').src = currentSeller.avatar_url;
       document.getElementById('modalSellerAvatar').src = currentSeller.avatar_url;
     }
@@ -147,7 +171,7 @@ function setupImageGallery(product) {
     { label: 'Right', url: product.image_right_url }
   ].filter(item => Boolean(item.url && item.url.trim() !== ''));
 
-  activeGalleryImages = images.length > 0 ? images.map(i => i.url) : ['https://via.placeholder.com/600x450?text=No+Photo'];
+  activeGalleryImages = images.length > 0 ? images.map(i => i.url) : ['data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="450" viewBox="0 0 600 450"%3E%3Crect fill="%23f1f3ff" width="600" height="450"/%3E%3Ctext fill="%23707881" font-family="sans-serif" font-size="20" dy="7" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3ENo Photo%3C/text%3E%3C/svg%3E'];
 
   const mainImg = document.getElementById('mainDisplayImg');
   const counter = document.getElementById('galleryCounter');
@@ -181,6 +205,45 @@ function setupImageGallery(product) {
   });
 }
 
+// Setup Fullscreen Lightbox for Original Image View
+function setupLightboxListeners() {
+  const heroFrame = document.getElementById('mainHeroFrame');
+  const modal = document.getElementById('imageLightboxModal');
+  const fullImg = document.getElementById('lightboxFullImg');
+  const closeBtn = document.getElementById('closeLightboxBtn');
+
+  if (!heroFrame || !modal || !fullImg) return;
+
+  heroFrame.addEventListener('click', () => {
+    const mainImg = document.getElementById('mainDisplayImg');
+    if (mainImg?.src) {
+      fullImg.src = mainImg.src;
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+    }
+  });
+
+  const closeLightbox = () => {
+    modal.classList.add('opacity-0', 'pointer-events-none');
+  };
+
+  closeBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeLightbox();
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.classList.contains('pointer-events-none')) {
+      closeLightbox();
+    }
+  });
+}
+
 // Configure Contact Buttons based on seller preference
 function configureContactButtons(product) {
   const desktopBtn = document.getElementById('btnContactSeller');
@@ -203,7 +266,6 @@ function configureContactButtons(product) {
     desktopBtn.onclick = openTg;
     mobileBtn.onclick = openTg;
   } else {
-    // Default: Open in-app message modal
     desktopBtn.onclick = openContactModal;
     mobileBtn.onclick = openContactModal;
   }
@@ -240,7 +302,6 @@ function setupFavoriteHooks() {
       }
     } catch (err) {
       console.error('Failed to toggle favorite:', err);
-      // Rollback UI
       isProductFavorited = !isProductFavorited;
       updateFavoriteUI();
     }
@@ -278,7 +339,6 @@ function openContactModal() {
     return;
   }
 
-  // Prevent messaging oneself
   if (currentProduct.seller_id === currentStudentUser.id) {
     alert('This is your own listing.');
     return;
@@ -293,7 +353,7 @@ function openContactModal() {
 
   title.textContent = currentProduct.title;
   price.textContent = `฿${Number(currentProduct.price || 0).toLocaleString()}`;
-  img.src = currentProduct.image_front_url || 'https://via.placeholder.com/150?text=Item';
+  img.src = currentProduct.image_front_url || '';
   sellerTitle.textContent = `Message ${currentSeller?.full_name || 'Seller'}`;
 
   messageInput.value = `Hi ${currentSeller?.full_name ? currentSeller.full_name.split(' ')[0] : 'there'}, I'm interested in your ${currentProduct.title}. Is it still available for meetup?`;
@@ -314,7 +374,6 @@ function setupModalDismissals() {
     if (e.target === modal) closeContactModal();
   });
 
-  // ESC Key listener
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('active')) {
       closeContactModal();
@@ -334,7 +393,6 @@ function setupContactHooks() {
     sendBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-base">progress_activity</span> Sending...';
 
     try {
-      // 1. Fetch or create conversation
       const { data: existingConvo } = await window.supabase
         .from('conversations')
         .select('id')
@@ -362,7 +420,6 @@ function setupContactHooks() {
         convoId = newConvo.id;
       }
 
-      // 2. Insert Message Record
       const { error: msgErr } = await window.supabase
         .from('messages')
         .insert([{
@@ -373,7 +430,6 @@ function setupContactHooks() {
 
       if (msgErr) throw msgErr;
 
-      // 3. Update Conversation Timestamp
       await window.supabase
         .from('conversations')
         .update({
@@ -397,7 +453,6 @@ function setupContactHooks() {
   });
 }
 
-// Toast notification helper
 function showToast(message, iconName = 'check_circle') {
   const toast = document.getElementById('toastNotification');
   const toastText = document.getElementById('toastText');
