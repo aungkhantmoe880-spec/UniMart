@@ -1,42 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UniMart</title>
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#336af7" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-</head>
-<body>
+  <meta name="theme-color" content="#006194" />
 
-  <!-- Supabase CDN and Client Configuration -->
+  <!-- Supabase client scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
   <script src="js/supabase.js"></script>
+</head>
+<body style="margin: 0; background-color: #f9f9ff; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; color: #707881;">
+  <p>Loading UniMart...</p>
 
   <script>
-    // 1. Register Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js');
-      });
-    }
-
-    // 2. Persistent Session Check & Smart Routing
-    async function checkAuthAndRoute() {
+    document.addEventListener('DOMContentLoaded', async () => {
       try {
         const { data: { session } } = await window.supabase.auth.getSession();
+        
         if (session && session.user) {
+          // If already logged in, navigate straight into the Marketplace feed
           window.location.replace('html/marketplace.html');
         } else {
-          window.location.replace('html/login.html');
+          // If logged out or a first-time visitor, route to the Welcome Home page
+          window.location.replace('html/home.html');
         }
-      } catch (err) {
-        window.location.replace('html/login.html');
+      } catch (e) {
+        window.location.replace('html/home.html');
       }
-    }
-
-    checkAuthAndRoute();
+    });
   </script>
 </body>
 </html>

@@ -2,18 +2,16 @@
 async function enforceAuth() {
   const { data: { session }, error } = await window.supabase.auth.getSession();
 
-  // 1. Kick out unauthenticated users
+  // 1. Kick out unauthenticated users to the welcome page
   if (error || !session) {
-    alert('Please log in to access this page.');
-    window.location.replace('login.html');
+    window.location.replace('home.html');
     return null;
   }
 
   // 2. Save user session globally
   window.currentUser = session.user;
-  console.log('Access granted to:', session.user.email);
 
-  // 3. Automatically hook up logout button if it exists on the page
+  // 3. Automatically hook up logout button across all pages
   setupLogout();
 
   return session.user;
@@ -25,8 +23,13 @@ function setupLogout() {
     if (logoutBtn) {
       logoutBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        await window.supabase.auth.signOut();
-        window.location.replace('login.html');
+        try {
+          await window.supabase.auth.signOut();
+        } catch (err) {
+          console.warn('Sign out error:', err);
+        }
+        // Redirect directly to the welcome home page
+        window.location.replace('home.html');
       });
     }
   });

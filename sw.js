@@ -1,4 +1,4 @@
-const CACHE_NAME = 'unimart-v5';
+const CACHE_NAME = 'unimart-v6';
 const ASSETS = [
   './',
   './index.html',
