@@ -134,6 +134,26 @@
         <p class="text-xs text-slate-500 mt-1">Enter your student ID or email to receive a reset link</p>
       </div>
 
+      <!-- 4. SET NEW PASSWORD VIEW (Appears when coming from recovery email) -->
+    <div id="updatePasswordView" class="hidden">
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Set New Password</h1>
+        <p class="text-xs text-slate-500 mt-1">Enter your new secure password below</p>
+      </div>
+
+      <form id="updatePasswordForm" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="newPasswordInput">New Password</label>
+          <input type="password" id="newPasswordInput" minlength="6" placeholder="At least 6 characters" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+        </div>
+
+        <button type="submit" id="saveNewPasswordBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-1">
+          <span>Update Password</span>
+        </button>
+      </form>
+    </div>
+    
+
       <form id="resetForm" class="flex flex-col gap-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1" for="resetEmailInput">Student ID or Email</label>

@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
   setupViewToggles();
   setupAuthForms();
+  listenForPasswordRecovery();
 });
 
-// View Switching Logic (Login <-> Register <-> Reset Password)
+// View Switching Logic (Login <-> Register <-> Reset Password <-> Update Password)
 function setupViewToggles() {
   const loginView = document.getElementById('loginView');
   const registerView = document.getElementById('registerView');
   const resetView = document.getElementById('resetView');
+  const updatePasswordView = document.getElementById('updatePasswordView');
 
   const toRegisterBtn = document.getElementById('toRegisterBtn');
   const toResetBtn = document.getElementById('toResetBtn');
@@ -18,35 +20,54 @@ function setupViewToggles() {
     if (loginView) loginView.classList.add('hidden');
     if (registerView) registerView.classList.add('hidden');
     if (resetView) resetView.classList.add('hidden');
+    if (updatePasswordView) updatePasswordView.classList.add('hidden');
 
     if (viewToShow) {
       viewToShow.classList.remove('hidden');
     }
   }
 
-  // Switch to Register View
   toRegisterBtn?.addEventListener('click', (e) => {
     e.preventDefault();
     showView(registerView);
   });
 
-  // Switch to Forgot Password View
   toResetBtn?.addEventListener('click', (e) => {
     e.preventDefault();
     showView(resetView);
   });
 
-  // Back to Login from Register
   backToLoginFromReg?.addEventListener('click', (e) => {
     e.preventDefault();
     showView(loginView);
   });
 
-  // Back to Login from Reset
   backToLoginFromReset?.addEventListener('click', (e) => {
     e.preventDefault();
     showView(loginView);
   });
+}
+
+// Detect when the user lands on login.html from the reset password email link
+function listenForPasswordRecovery() {
+  // 1. Supabase Event Listener
+  window.supabase.auth.onAuthStateChange(async (event) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      showNewPasswordForm();
+    }
+  });
+
+  // 2. Hash Fragment check (fallback if event fires before DOM binds)
+  if (window.location.hash && window.location.hash.includes('type=recovery')) {
+    showNewPasswordForm();
+  }
+}
+
+function showNewPasswordForm() {
+  document.getElementById('loginView')?.classList.add('hidden');
+  document.getElementById('registerView')?.classList.add('hidden');
+  document.getElementById('resetView')?.classList.add('hidden');
+  document.getElementById('updatePasswordView')?.classList.remove('hidden');
 }
 
 // Supabase Form Submissions
@@ -66,7 +87,6 @@ function setupAuthForms() {
     try {
       let emailToUse = identifier;
 
-      // Check if user inputted a Student ID instead of an email
       if (!identifier.includes('@')) {
         const { data: profile, error: idErr } = await window.supabase
           .from('profiles')
@@ -86,8 +106,6 @@ function setupAuthForms() {
       });
 
       if (error) throw error;
-
-      // Redirect into Marketplace on success
       window.location.replace('marketplace.html');
     } catch (err) {
       alert(err.message || 'Login failed');
@@ -112,7 +130,6 @@ function setupAuthForms() {
     registerBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">progress_activity</span> Registering...';
 
     try {
-      // 1. Create Supabase Auth User
       const { data: authData, error: authError } = await window.supabase.auth.signUp({
         email,
         password
@@ -122,8 +139,7 @@ function setupAuthForms() {
 
       const userId = authData.user?.id;
       if (userId) {
-        // 2. Insert into profiles table
-        const { error: profileError } = await window.supabase
+        await window.supabase
           .from('profiles')
           .upsert({
             id: userId,
@@ -133,15 +149,9 @@ function setupAuthForms() {
             email: email,
             created_at: new Date().toISOString()
           });
-
-        if (profileError) {
-          console.warn('Profile sync error:', profileError);
-        }
       }
 
       alert('Registration successful! Please log in with your credentials.');
-      
-      // Reset form and return to login view
       registerForm.reset();
       document.getElementById('loginView')?.classList.remove('hidden');
       document.getElementById('registerView')?.classList.add('hidden');
@@ -153,7 +163,7 @@ function setupAuthForms() {
     }
   });
 
-  // 3. PASSWORD RESET
+  // 3. SEND PASSWORD RESET EMAIL
   const resetForm = document.getElementById('resetForm');
   const sendResetBtn = document.getElementById('sendResetBtn');
 
@@ -167,7 +177,6 @@ function setupAuthForms() {
     try {
       let emailToUse = identifier;
 
-      // Handle student ID input
       if (!identifier.includes('@')) {
         const { data: profile, error: idErr } = await window.supabase
           .from('profiles')
@@ -181,13 +190,16 @@ function setupAuthForms() {
         emailToUse = profile.email;
       }
 
+      // Dynamically calculate the exact full URL (including /UniMart/ on GitHub Pages)
+      const redirectUrl = window.location.href.split('#')[0].split('?')[0];
+
       const { error } = await window.supabase.auth.resetPasswordForEmail(emailToUse, {
-        redirectTo: window.location.origin + '/html/login.html'
+        redirectTo: redirectUrl
       });
 
       if (error) throw error;
 
-      alert('Password reset link sent! Check your student email inbox.');
+      alert('Password reset link sent! Please check your email inbox.');
       resetForm.reset();
       document.getElementById('loginView')?.classList.remove('hidden');
       document.getElementById('resetView')?.classList.add('hidden');
@@ -196,6 +208,33 @@ function setupAuthForms() {
     } finally {
       sendResetBtn.disabled = false;
       sendResetBtn.innerHTML = '<span>Send Reset Link</span>';
+    }
+  });
+
+  // 4. SAVE NEW PASSWORD AFTER RECOVERY LINK CLICK
+  const updatePasswordForm = document.getElementById('updatePasswordForm');
+  const saveNewPasswordBtn = document.getElementById('saveNewPasswordBtn');
+
+  updatePasswordForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newPassword = document.getElementById('newPasswordInput').value;
+
+    saveNewPasswordBtn.disabled = true;
+    saveNewPasswordBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">progress_activity</span> Updating...';
+
+    try {
+      const { error } = await window.supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      alert('Password updated successfully! You can now log in.');
+      window.location.replace('marketplace.html');
+    } catch (err) {
+      alert('Failed to update password: ' + err.message);
+      saveNewPasswordBtn.disabled = false;
+      saveNewPasswordBtn.innerHTML = '<span>Update Password</span>';
     }
   });
 }
