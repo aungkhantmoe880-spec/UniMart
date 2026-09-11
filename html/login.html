@@ -1,134 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UniMart - Login & Register</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>UniMart | Login & Register</title>
 
-  <!-- CSS Stylesheets -->
+  <link rel="manifest" href="../manifest.json" />
+  <meta name="theme-color" content="#006194" />
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#006194",
+            "primary-dark": "#004b73",
+            surface: "#f9f9ff",
+            "surface-card": "#ffffff",
+            outline: "#bfc7d2"
+          }
+        }
+      }
+    };
+  </script>
+
   <link rel="stylesheet" href="../css/global.css" />
-  <link rel="stylesheet" href="../css/component.css" />
   <link rel="stylesheet" href="../css/auth.css" />
+</head>
 
-  <!-- PWA Manifest & Settings -->
-<link rel="manifest" href="../manifest.json" />
-<meta name="theme-color" content="#336af7" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="UniMart" />
-<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" />
+<body class="bg-surface font-['Plus_Jakarta_Sans',sans-serif] text-slate-800 antialiased min-h-screen flex flex-col items-center justify-center p-4">
 
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('../sw.js', { scope: '../' })
-        .then(reg => console.log('SW Registered:', reg.scope))
-        .catch(err => console.error('SW Error:', err));
-    });
-  }
-</script>
-</head> 
-<body>
+  <!-- Header Logo -->
+  <div class="mb-6 flex items-center justify-center">
+    <a href="home.html" class="flex items-center gap-1.5 transition-transform hover:scale-105">
+      <span class="text-3xl font-extrabold tracking-tight text-primary">Uni<span class="text-slate-900">Mart</span></span>
+    </a>
+  </div>
 
-  <!-- Auth Container with Centered Logo Above the Card -->
-  <main class="auth-container">
-    
-    <!-- Logo centered above login box -->
-    <div class="auth-logo">
-      <a href="marketplace.html"><span class="logo-uni">Uni</span><span class="logo-mart">Mart</span></a>
-    </div>
+  <!-- Main Auth Card Container -->
+  <div class="w-full max-w-md bg-surface-card rounded-2xl shadow-[0_8px_30px_rgb(0,97,148,0.08)] border border-slate-100 p-6 sm:p-8">
 
-    <div class="auth-card">
+    <!-- 1. LOGIN FORM -->
+    <div id="loginView">
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Welcome!</h1>
+        <p class="text-xs text-slate-500 mt-1">Sign in to buy and sell across your campus</p>
+      </div>
 
-      <!-- Login Form -->
-      <form id="loginForm">
-        <h2>Welcome!</h2>
-
-        <div id="loginError" class="error-message"></div>
-
-        <label for="loginIdentifier">Student ID or Email</label>
-        <input type="text" id="loginIdentifier" placeholder="e.g. student id or email" required />
-
-        <label for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" placeholder="Enter your password" required />
-
-        <!-- Forgot Password Trigger -->
-        <div class="forgot-password-wrap">
-          <a href="#" id="showForgotLink">Forgot Password?</a>
+      <form id="loginForm" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="loginId">Student ID or Email</label>
+          <input type="text" id="loginId" placeholder="e.g. 6412345 or student@uni.edu" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
         </div>
 
-        <button type="submit" class="btn btn-upload">Log In</button>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+        </div>
 
-        <p class="auth-toggle-text">
-          Don't have an account? <a href="#" id="showRegisterLink">Register here</a>
+        <div class="flex justify-end">
+          <button type="button" id="toResetBtn" class="text-xs font-semibold text-primary hover:underline">Forgot Password?</button>
+        </div>
+
+        <!-- Large Blue Login Button -->
+        <button type="submit" id="loginBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-1">
+          <span>Log In</span>
+        </button>
+
+        <p class="text-xs text-center text-slate-600 mt-3">
+          Don’t have an account? 
+          <button type="button" id="toRegisterBtn" class="font-bold text-primary hover:underline">Register here</button>
         </p>
       </form>
-
-      <!-- Register Form -->
-      <form id="registerForm" class="hidden">
-        <h2>Create an Account</h2>
-
-        <div id="generalError" class="error-message"></div>
-
-        <label for="regStudentId">Student ID</label>
-        <input type="text" id="regStudentId" placeholder="e.g. 6412345" required />
-
-        <label for="regName">Full Name</label>
-        <input type="text" id="regName" placeholder="e.g. Alex Smith" required />
-
-        <label for="regAge">Age</label>
-        <input type="number" id="regAge" min="15" max="100" placeholder="e.g. 20" required />
-        <span id="ageError" class="error-message"></span>
-
-        <label for="regEmail">Email Address</label>
-        <input type="email" id="regEmail" placeholder="student@uni.edu" required />
-
-        <label for="regPassword">Password</label>
-        <input type="password" id="regPassword" placeholder="Create a password" required />
-        <span id="passwordError" class="error-message"></span>
-
-        <button type="submit" class="btn btn-upload">Register</button>
-
-        <p class="auth-toggle-text">
-          Already have an account? <a href="#" id="showLoginLink">Log in here</a>
-        </p>
-      </form>
-
-      <!-- Forgot Password Form -->
-      <form id="forgotForm" class="hidden">
-        <h2>Reset Password</h2>
-        <p class="auth-subtext">Enter your Student ID or Email to receive a password reset link.</p>
-
-        <div id="forgotError" class="error-message"></div>
-        <div id="forgotSuccess" class="success-message"></div>
-
-        <label for="forgotIdentifier">Student ID or Email</label>
-        <input type="text" id="forgotIdentifier" placeholder="e.g. 6412345 or student@uni.edu" required />
-
-        <button type="submit" class="btn btn-upload" id="btnSendReset">Send Reset Link</button>
-
-        <p class="auth-toggle-text">
-          Remember your password? <a href="#" id="backToLoginFromForgot">Back to login</a>
-        </p>
-      </form>
-
-      <!-- New Password Form (Appears when clicking email link) -->
-      <form id="resetPasswordForm" class="hidden">
-        <h2>Set New Password</h2>
-        <p class="auth-subtext">Enter your new password below.</p>
-
-        <div id="resetError" class="error-message"></div>
-
-        <label for="newPassword">New Password</label>
-        <input type="password" id="newPassword" placeholder="Minimum 6 characters" required />
-
-        <button type="submit" class="btn btn-upload" id="btnUpdatePassword">Update Password</button>
-      </form>
-
     </div>
-  </main>
 
-  <!-- JavaScript Scripts -->
+    <!-- 2. REGISTER FORM -->
+    <div id="registerView" class="hidden">
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Create an Account</h1>
+        <p class="text-xs text-slate-500 mt-1">Join verified students on UniMart</p>
+      </div>
+
+      <form id="registerForm" class="flex flex-col gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="regStudentId">Student ID</label>
+          <input type="text" id="regStudentId" placeholder="e.g. 250702404006" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="regFullName">Full Name</label>
+          <input type="text" id="regFullName" placeholder="e.g. Alex Smith" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="regAge">Age</label>
+          <input type="number" id="regAge" min="15" max="90" placeholder="e.g. 21" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="regEmail">Email Address</label>
+          <input type="email" id="regEmail" placeholder="student@uni.edu" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="regPassword">Password</label>
+          <input type="password" id="regPassword" placeholder="Create a password" minlength="6" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+        </div>
+
+        <!-- Large Blue Register Button -->
+        <button type="submit" id="registerBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-2">
+          <span>Register</span>
+        </button>
+
+        <p class="text-xs text-center text-slate-600 mt-2">
+          Already have an account? 
+          <button type="button" id="backToLoginFromReg" class="font-bold text-primary hover:underline">Log in here</button>
+        </p>
+      </form>
+    </div>
+
+    <!-- 3. RESET PASSWORD FORM -->
+    <div id="resetView" class="hidden">
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Reset Password</h1>
+        <p class="text-xs text-slate-500 mt-1">Enter your student ID or email to receive a reset link</p>
+      </div>
+
+      <form id="resetForm" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="resetEmailInput">Student ID or Email</label>
+          <input type="text" id="resetEmailInput" placeholder="e.g. 6412345 or student@uni.edu" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+        </div>
+
+        <!-- Large Blue Send Reset Link Button -->
+        <button type="submit" id="sendResetBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-1">
+          <span>Send Reset Link</span>
+        </button>
+
+        <p class="text-xs text-center text-slate-600 mt-3">
+          Remember your password? 
+          <button type="button" id="backToLoginFromReset" class="font-bold text-primary hover:underline">Back to login</button>
+        </p>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js"></script>
   <script src="../js/supabase.js"></script>
