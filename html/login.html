@@ -45,6 +45,19 @@
     </a>
   </div>
 
+  <!-- Alert Banner for Expired / Invalid Links -->
+  <div id="authAlertBanner" class="w-full max-w-md mb-4 hidden">
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-xs flex items-center justify-between gap-2 shadow-xs">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-base text-red-500">error</span>
+        <span id="authAlertMessage">This link has expired or is invalid. Please request a new one.</span>
+      </div>
+      <button type="button" onclick="document.getElementById('authAlertBanner').classList.add('hidden')" class="text-red-400 hover:text-red-700">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+  </div>
+
   <!-- Main Auth Card Container -->
   <div class="w-full max-w-md bg-surface-card rounded-2xl shadow-[0_8px_30px_rgb(0,97,148,0.08)] border border-slate-100 p-6 sm:p-8">
 
@@ -67,17 +80,16 @@
         </div>
 
         <div class="flex justify-end">
-          <button type="button" id="toResetBtn" class="text-xs font-semibold text-primary hover:underline">Forgot Password?</button>
+          <button type="button" id="toResetBtn" class="text-xs font-semibold text-primary hover:underline cursor-pointer">Forgot Password?</button>
         </div>
 
-        <!-- Large Blue Login Button -->
-        <button type="submit" id="loginBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-1">
+        <button type="submit" id="loginBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-1 cursor-pointer">
           <span>Log In</span>
         </button>
 
         <p class="text-xs text-center text-slate-600 mt-3">
           Don’t have an account? 
-          <button type="button" id="toRegisterBtn" class="font-bold text-primary hover:underline">Register here</button>
+          <button type="button" id="toRegisterBtn" class="font-bold text-primary hover:underline cursor-pointer">Register here</button>
         </p>
       </form>
     </div>
@@ -112,17 +124,16 @@
 
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1" for="regPassword">Password</label>
-          <input type="password" id="regPassword" placeholder="Create a password" minlength="6" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+          <input type="password" id="regPassword" placeholder="Create a password (min. 6 characters)" minlength="6" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
         </div>
 
-        <!-- Large Blue Register Button -->
-        <button type="submit" id="registerBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-2">
+        <button type="submit" id="registerBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-2 cursor-pointer">
           <span>Register</span>
         </button>
 
         <p class="text-xs text-center text-slate-600 mt-2">
           Already have an account? 
-          <button type="button" id="backToLoginFromReg" class="font-bold text-primary hover:underline">Log in here</button>
+          <button type="button" id="backToLoginFromReg" class="font-bold text-primary hover:underline cursor-pointer">Log in here</button>
         </p>
       </form>
     </div>
@@ -134,41 +145,45 @@
         <p class="text-xs text-slate-500 mt-1">Enter your student ID or email to receive a reset link</p>
       </div>
 
-      <!-- 4. SET NEW PASSWORD VIEW (Appears when coming from recovery email) -->
-    <div id="updatePasswordView" class="hidden">
-      <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Set New Password</h1>
-        <p class="text-xs text-slate-500 mt-1">Enter your new secure password below</p>
-      </div>
-
-      <form id="updatePasswordForm" class="flex flex-col gap-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1" for="newPasswordInput">New Password</label>
-          <input type="password" id="newPasswordInput" minlength="6" placeholder="At least 6 characters" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-        </div>
-
-        <button type="submit" id="saveNewPasswordBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-1">
-          <span>Update Password</span>
-        </button>
-      </form>
-    </div>
-    
-
       <form id="resetForm" class="flex flex-col gap-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1" for="resetEmailInput">Student ID or Email</label>
           <input type="text" id="resetEmailInput" placeholder="e.g. 6412345 or student@uni.edu" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
         </div>
 
-        <!-- Large Blue Send Reset Link Button -->
-        <button type="submit" id="sendResetBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-1">
+        <button type="submit" id="sendResetBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-1 cursor-pointer">
           <span>Send Reset Link</span>
         </button>
 
         <p class="text-xs text-center text-slate-600 mt-3">
           Remember your password? 
-          <button type="button" id="backToLoginFromReset" class="font-bold text-primary hover:underline">Back to login</button>
+          <button type="button" id="backToLoginFromReset" class="font-bold text-primary hover:underline cursor-pointer">Back to login</button>
         </p>
+      </form>
+    </div>
+
+    <!-- 4. SET NEW PASSWORD VIEW (New Password + Re-Write Password) -->
+    <div id="updatePasswordView" class="hidden">
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Reset Your Password</h1>
+        <p class="text-xs text-slate-500 mt-1">Please enter and confirm your new password</p>
+      </div>
+
+      <form id="updatePasswordForm" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="newPasswordInput">New Password</label>
+          <input type="password" id="newPasswordInput" minlength="6" placeholder="Enter new password (min. 6 characters)" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="confirmPasswordInput">Re-Write Password</label>
+          <input type="password" id="confirmPasswordInput" minlength="6" placeholder="Re-write your new password" required class="w-full h-11 px-3.5 rounded-xl border border-outline text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+          <p id="passwordMismatchMsg" class="text-[11px] text-red-600 mt-1 hidden font-medium">Passwords do not match. Please verify.</p>
+        </div>
+
+        <button type="submit" id="saveNewPasswordBtn" class="w-full h-11 sm:h-12 bg-primary hover:bg-primary-dark active:scale-[0.99] text-white text-sm sm:text-base font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-1 cursor-pointer">
+          <span>Update Password</span>
+        </button>
       </form>
     </div>
 
